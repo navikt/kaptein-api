@@ -27,7 +27,6 @@ object KafkaClient {
     }
 
     suspend fun readFromTopic(topic: String) {
-
         val consumer = KafkaConsumer<String, String>(consumerConfig())
         coroutineScope {
             consumer.subscribe(listOf(topic))
