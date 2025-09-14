@@ -21,7 +21,7 @@ object KafkaClient {
 
     suspend fun startKafkaListener() {
         coroutineScope {
-            launch { readFromTopic("klage.kaptein-behandlinger.v1") }
+            launch { readFromTopic("klage.kaptein-behandling.v1") }
         }
         logger.debug("Method returning, but consumer will still be active in coroutine scope")
     }

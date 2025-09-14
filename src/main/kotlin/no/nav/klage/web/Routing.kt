@@ -19,12 +19,11 @@ fun Application.configureRouting() {
         }
 
         get("/internal/isready") {
-            call.respond(HttpStatusCode.OK)
-//            if (BehandlingRepository.isReady()) {
-//                call.respond(HttpStatusCode.OK)
-//            } else {
-//                call.respond(HttpStatusCode.ServiceUnavailable)
-//            }
+            if (BehandlingRepository.isReady()) {
+                call.respond(HttpStatusCode.OK)
+            } else {
+                call.respond(HttpStatusCode.ServiceUnavailable)
+            }
         }
 
         //TODO add request params and the response
