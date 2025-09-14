@@ -22,7 +22,7 @@ private val logger = LoggerFactory.getLogger("main")
 
 val Application.envKind get() = environment.config.property("ktor.development").getString()
 val Application.isDevelopmentMode get() = envKind == "true"
-val Application.isProductionMode get() = envKind == "production"
+val Application.isProductionMode get() = envKind == "false"
 
 fun Application.module() {
     if (isProductionMode) {
