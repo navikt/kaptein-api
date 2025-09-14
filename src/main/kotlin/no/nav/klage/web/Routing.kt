@@ -26,15 +26,26 @@ fun Application.configureRouting() {
             }
         }
 
-        //TODO add request params and the response
-        get("/graphs") {
-            val start = System.currentTimeMillis()
-            val job = launch {
-                GraphCreator.calculateGraphs()
+        get("/active/graphs") {
+            launch {
+                val v = GraphCreator.calculateGraphs()
+
+                call.respond(GraphResponse(
+                    name = "Sample Graph",
+                    value = 10,
+                ))
             }
-            job.join()
-            val end = System.currentTimeMillis()
-            call.respondText("Graphs done in ${end - start} ms")
+        }
+
+        get("/finished/graphs") {
+            launch {
+                val v = GraphCreator.calculateGraphs()
+
+                call.respond(GraphResponse(
+                    name = "Sample Graph",
+                    value = 10,
+                ))
+            }
         }
     }
 }

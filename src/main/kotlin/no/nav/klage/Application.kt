@@ -9,6 +9,7 @@ import no.nav.klage.service.KabalApiService
 import no.nav.klage.service.KafkaClient
 import no.nav.klage.service.MockKafkaClient
 import no.nav.klage.web.configureRouting
+import no.nav.klage.web.configureSockets
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -24,14 +25,14 @@ val Application.envKind get() = environment.config.property("ktor.development").
 val Application.isDevelopmentMode get() = envKind == "true"
 val Application.isProductionMode get() = envKind == "false"
 
-fun Application.module() {
+suspend fun Application.module() {
     if (isProductionMode) {
-        //Fetch data from kabal-api and populate the repository
-        launch {
+        val fetchJob = launch {
             KabalApiService.fetchAndStoreBehandlinger()
         }
 
-        //Also, start a job that periodically fetches new data
+        fetchJob.join()
+
         launch {
             KafkaClient.startKafkaListener()
         }
@@ -44,7 +45,7 @@ fun Application.module() {
 
     logger.debug("Application is running in ${if (isDevelopmentMode) "development/local" else "production"} mode")
 
-//    configureSockets()
+    configureSockets()
     configureRouting()
 }
 

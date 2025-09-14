@@ -43,7 +43,7 @@ object KafkaClient {
 
     private fun consumerConfig() = mapOf(
         BOOTSTRAP_SERVERS_CONFIG to System.getenv("KAFKA_BROKERS"),
-        AUTO_OFFSET_RESET_CONFIG to "earliest",
+        AUTO_OFFSET_RESET_CONFIG to "latest",
         KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
         VALUE_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
         GROUP_ID_CONFIG to "kaptein-api-consumer_" + UUID.randomUUID().toString(),

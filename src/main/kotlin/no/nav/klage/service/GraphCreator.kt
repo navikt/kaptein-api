@@ -1,5 +1,6 @@
 package no.nav.klage.service
 
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -11,6 +12,7 @@ object GraphCreator {
 
     private val logger = LoggerFactory.getLogger(GraphCreator::class.java.name)
 
+    //TODO return something
     suspend fun calculateGraphs() {
         coroutineScope {
             logger.debug("Starting graph calculations")
@@ -26,17 +28,22 @@ object GraphCreator {
 
             mainFilterJob.join() // wait for the main filter to complete before starting graphs
 
-            launch {
+            val graph1 = async {
                 graph1(filteredBehandlingSet)
             }
-            launch {
+            val graph2 = async {
                 graph2(filteredBehandlingSet)
             }
-            launch {
+            val graph3 = async {
                 graph3(filteredBehandlingSet)
             }
+
+            val resultGraph1 = graph1.await()
+            val resultGraph2 = graph2.await()
+            val resultGraph3 = graph3.await()
+
+            logger.debug("All graphs done")
         }
-        logger.debug("All graphs done")
     }
 
     suspend fun graph1(behandlingSet: Set<Behandling>) {
