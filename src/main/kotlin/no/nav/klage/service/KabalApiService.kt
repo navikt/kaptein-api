@@ -59,11 +59,12 @@ object KabalApiService {
                 while (!channel.isClosedForRead) {
                     logger.debug("Reading line from stream")
                     val behandlingAsString = channel.readUTF8Line()
-                    logger.debug("Received line: $behandlingAsString")
                     println(behandlingAsString)
                     if (!behandlingAsString.isNullOrBlank()) {
                         behandlingList += ourJacksonObjectMapper().readValue(behandlingAsString, Behandling::class.java)
-                        logger.debug("Added behandling number ${++counter}")
+                    }
+                    if (++counter % 100 == 0) {
+                        logger.debug("Fetched $counter behandlinger so far...")
                     }
                 }
             }

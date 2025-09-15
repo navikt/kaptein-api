@@ -10,7 +10,7 @@ tenant: nav.no
 
 kafka_pool: nav-prod
 
-initialDelay: 120
+initialDelay: 480
 isReadyDelay: 480
 
 replicasMin: 2
