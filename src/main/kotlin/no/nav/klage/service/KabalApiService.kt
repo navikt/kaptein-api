@@ -3,9 +3,11 @@ package no.nav.klage.service
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.jackson.*
 import io.ktor.utils.io.*
 import no.nav.klage.repository.BehandlingRepository
 import org.slf4j.LoggerFactory
@@ -15,14 +17,19 @@ object KabalApiService {
     private val logger = LoggerFactory.getLogger(KabalApiService::class.java.name)
 
     suspend fun fetchAndStoreBehandlinger() {
-        val client = HttpClient(CIO)
+        val client = HttpClient(CIO) {
+            install(ContentNegotiation) {
+                jackson()
+            }
+        }
 
         val tokenEndpoint = System.getenv("NAIS_TOKEN_ENDPOINT")
         val cluster = System.getenv("NAIS_CLUSTER_NAME")
         val target = "api://$cluster.klage.kabal-api/.default"
 
         val tokenResponse = client.post(tokenEndpoint) {
-            header("Content-Type", "application/json")
+            contentType(ContentType.Application.Json)
+            accept(ContentType.Application.Json)
             setBody(
                 TokenRequest(
                     identity_provider = "azuread",
@@ -32,7 +39,7 @@ object KabalApiService {
         }.body<TokenResponse>()
 
         val response = client.get("http://kabal-api/api/kaptein/behandlinger-stream") {
-            // Add necessary headers, authentication, etc.
+            contentType(ContentType.Application.Json)
             header("Accept", "application/x-ndjson")
             header("Authorization", "Bearer ${tokenResponse.access_token}")
         }
