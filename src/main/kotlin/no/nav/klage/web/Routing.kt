@@ -1,17 +1,57 @@
 package no.nav.klage.web
 
-import io.ktor.http.HttpStatusCode
+import io.github.smiley4.ktoropenapi.get
+import io.github.smiley4.ktoropenapi.openApi
+import io.github.smiley4.ktorswaggerui.swaggerUI
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.launch
+import no.nav.klage.domain.BehandlingerActiveResponseView
+import no.nav.klage.domain.BehandlingerFinishedResponseView
 import no.nav.klage.repository.BehandlingRepository
-import no.nav.klage.service.GraphCreator
+import no.nav.klage.service.getBehandlingListFerdigstilte
+import no.nav.klage.service.getBehandlingListLedige
+import no.nav.klage.service.getBehandlingListTildelte
 
 fun Application.configureRouting() {
     routing {
-        get("/") {
-            call.respondText("Application started")
+        route("/api.json") {
+            openApi()
+        }
+
+        route("/swagger") {
+            swaggerUI("/api.json")
+        }
+
+        get("/behandlinger/ledige", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerActiveResponseView>()
+                }
+            }
+        }) {
+            call.respond(getBehandlingListLedige())
+        }
+
+        get("/behandlinger/tildelte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerActiveResponseView>()
+                }
+            }
+        }) {
+            call.respond(getBehandlingListTildelte())
+        }
+
+        get("/behandlinger/ferdigstilte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerFinishedResponseView>()
+                }
+            }
+        }) {
+            call.respond(getBehandlingListFerdigstilte())
         }
 
         get("/internal/health") {
@@ -23,28 +63,6 @@ fun Application.configureRouting() {
                 call.respond(HttpStatusCode.OK)
             } else {
                 call.respond(HttpStatusCode.ServiceUnavailable)
-            }
-        }
-
-        get("/active/graphs") {
-            launch {
-                val v = GraphCreator.calculateGraphs()
-
-                call.respond(GraphResponse(
-                    name = "Sample Graph",
-                    value = 10,
-                ))
-            }
-        }
-
-        get("/finished/graphs") {
-            launch {
-                val v = GraphCreator.calculateGraphs()
-
-                call.respond(GraphResponse(
-                    name = "Sample Graph",
-                    value = 10,
-                ))
             }
         }
     }

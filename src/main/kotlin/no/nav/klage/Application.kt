@@ -1,7 +1,12 @@
 package no.nav.klage
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import io.github.smiley4.ktoropenapi.OpenApi
+import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.compression.*
+import io.ktor.server.plugins.contentnegotiation.*
 import kotlinx.coroutines.launch
 import no.nav.klage.domain.Behandling
 import no.nav.klage.repository.BehandlingRepository
@@ -9,8 +14,8 @@ import no.nav.klage.service.KabalApiService
 import no.nav.klage.service.KafkaClient
 import no.nav.klage.service.MockKafkaClient
 import no.nav.klage.web.configureRouting
-import no.nav.klage.web.configureSockets
 import org.slf4j.LoggerFactory
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -26,6 +31,17 @@ val Application.isDevelopmentMode get() = envKind == "true"
 val Application.isProductionMode get() = envKind == "false"
 
 suspend fun Application.module() {
+    install(ContentNegotiation) {
+        jackson {
+            registerModule(JavaTimeModule())
+            dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+        }
+    }
+    install(Compression) {
+        gzip()
+    }
+    install(OpenApi)
+
     if (isProductionMode) {
         val fetchJob = launch {
             KabalApiService.fetchAndStoreBehandlinger()
@@ -45,7 +61,7 @@ suspend fun Application.module() {
 
     logger.debug("Application is running in ${if (isDevelopmentMode) "development/local" else "production"} mode")
 
-    configureSockets()
+//    configureSockets()
     configureRouting()
 }
 
@@ -62,8 +78,8 @@ private fun addMockBehandlinger() {
                 typeId = "1",
                 mottattKlageinstans = LocalDate.now(),
                 avsluttetAvSaksbehandlerDate = LocalDate.now(),
-                isAvsluttetAvSaksbehandler = false,
-                isTildelt = false,
+                isAvsluttetAvSaksbehandler = listOf(true, false).random(),
+                isTildelt = listOf(true, false).random(),
                 tildeltEnhet = "4295",
                 frist = LocalDate.now().plusWeeks(4),
                 ageKA = (1..20).random(),
@@ -71,7 +87,11 @@ private fun addMockBehandlinger() {
                 hjemmelIdList = listOf("1", "2"),
                 modified = LocalDateTime.now(),
                 created = LocalDateTime.now(),
-                resultat = null,
+                resultat = Behandling.VedtakView(
+                    id = UUID.randomUUID(),
+                    utfallId = listOf("1", "2", "3").random(),
+                    hjemmelIdSet = setOf("FTRL_22_12", "FTRL_22_13"),
+                ),
                 sattPaaVent = null,
                 sendtTilTrygderetten = null,
                 kjennelseMottatt = null,
