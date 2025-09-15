@@ -49,21 +49,29 @@ object KabalApiService {
 
         val behandlingList = mutableListOf<Behandling>()
 
-        // Check if the response is successful and then stream the body
-        if (response.status.isSuccess()) {
-            logger.debug("Response status is successful: {}", response.status)
-            val channel = response.bodyAsChannel()
-            while (!channel.isClosedForRead) {
-                logger.debug("Reading line from stream")
-                val behandlingAsString = channel.readUTF8Line()
-                logger.debug("Received line: $behandlingAsString")
-                if (!behandlingAsString.isNullOrBlank()) {
-                    behandlingList += ourJacksonObjectMapper().readValue(behandlingAsString, Behandling::class.java)
+        try {
+            // Check if the response is successful and then stream the body
+            if (response.status.isSuccess()) {
+                logger.debug("Response status is successful: {}", response.status)
+                println("Response status: ${response.status}")
+                val channel = response.bodyAsChannel()
+                while (!channel.isClosedForRead) {
+                    logger.debug("Reading line from stream")
+                    val behandlingAsString = channel.readUTF8Line()
+                    logger.debug("Received line: $behandlingAsString")
+                    println(behandlingAsString)
+                    if (!behandlingAsString.isNullOrBlank()) {
+                        behandlingList += ourJacksonObjectMapper().readValue(behandlingAsString, Behandling::class.java)
+                    }
                 }
             }
+        } catch (e: Exception) {
+            logger.error("Error while fetching or processing behandlinger: ", e)
+            println("Error while fetching or processing behandlinger: ${e.message}")
+            e.printStackTrace()
         }
 
-        BehandlingRepository.clearAndAddAll(emptyList())
+        BehandlingRepository.clearAndAddAll(behandlingList)
     }
 }
 
