@@ -56,7 +56,7 @@ object KabalApiService {
                 logger.debug("Response status is successful: {}", response.status)
                 println("Response status: ${response.status}")
                 val channel = response.bodyAsChannel()
-                while (!channel.isClosedForRead) {
+                while (!channel.isClosedForRead && counter < 2000) {
                     logger.debug("Reading line from stream")
                     val behandlingAsString = channel.readUTF8Line()
                     println(behandlingAsString)
