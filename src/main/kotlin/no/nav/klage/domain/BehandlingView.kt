@@ -5,12 +5,12 @@ import java.time.LocalDateTime
 import java.util.*
 
 data class BehandlingerFinishedResponseView(
-    val finished: List<BehandlingFinishedView>,
+    val behandlinger: List<BehandlingFinishedView>,
     val total: Int,
 )
 
 data class BehandlingerActiveResponseView(
-    val active: List<BehandlingActiveView>,
+    val behandlinger: List<BehandlingActiveView>,
     val total: Int,
 )
 

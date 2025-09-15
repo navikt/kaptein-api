@@ -21,7 +21,7 @@ suspend fun getBehandlingListLedige(): BehandlingerActiveResponseView {
     logger.debug("Fetched ${behandlingViewList.size} ledige behandlinger in ${System.currentTimeMillis() - start} ms")
 
     return BehandlingerActiveResponseView(
-        active = behandlingViewList,
+        behandlinger = behandlingViewList,
         total = behandlingViewList.size,
     )
 }
@@ -41,7 +41,7 @@ suspend fun getBehandlingListTildelte(): BehandlingerActiveResponseView {
     logger.debug("Fetched ${behandlingViewList.size} tildelte behandlinger in ${System.currentTimeMillis() - start} ms")
 
     return BehandlingerActiveResponseView(
-        active = behandlingViewList,
+        behandlinger = behandlingViewList,
         total = behandlingViewList.size,
     )
 }
@@ -77,7 +77,7 @@ suspend fun getBehandlingListFerdigstilte(): BehandlingerFinishedResponseView {
     }
     logger.debug("Fetched ${behandlingViewList.size} finished behandlinger in ${System.currentTimeMillis() - start} ms")
     return BehandlingerFinishedResponseView(
-        finished = behandlingViewList,
+        behandlinger = behandlingViewList,
         total = behandlingViewList.size,
     )
 }
