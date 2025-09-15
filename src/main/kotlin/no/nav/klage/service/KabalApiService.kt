@@ -40,6 +40,7 @@ object KabalApiService {
             )
         }.body<TokenResponse>()
 
+        logger.debug("About to fetch behandlinger from Kabal API")
         val response = client.get("http://kabal-api/api/kaptein/behandlinger-stream") {
             contentType(ContentType.Application.Json)
             header("Accept", "application/x-ndjson")
@@ -50,13 +51,15 @@ object KabalApiService {
 
         // Check if the response is successful and then stream the body
         if (response.status.isSuccess()) {
+            logger.debug("Response status is successful: {}", response.status)
             val channel = response.bodyAsChannel()
             while (!channel.isClosedForRead) {
+                logger.debug("Reading line from stream")
                 val behandlingAsString = channel.readUTF8Line()
+                logger.debug("Received line: $behandlingAsString")
                 if (!behandlingAsString.isNullOrBlank()) {
                     behandlingList += ourJacksonObjectMapper().readValue(behandlingAsString, Behandling::class.java)
                 }
-                logger.debug("Received line: $behandlingAsString")
             }
         }
 
