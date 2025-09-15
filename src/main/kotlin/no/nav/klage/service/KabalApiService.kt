@@ -11,6 +11,7 @@ import io.ktor.serialization.jackson.*
 import io.ktor.utils.io.*
 import no.nav.klage.domain.Behandling
 import no.nav.klage.oppgave.util.ourJacksonObjectMapper
+import no.nav.klage.repository.BehandlingRepository
 import org.slf4j.LoggerFactory
 
 object KabalApiService {
@@ -77,6 +78,7 @@ object KabalApiService {
                 e.printStackTrace()
             }
         }
+        BehandlingRepository.clearAndAddAll(behandlingList)
     }
 }
 
