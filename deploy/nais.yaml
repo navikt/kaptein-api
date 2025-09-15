@@ -42,7 +42,7 @@ spec:
     failureThreshold: 10
   readiness:
     path: /internal/isready
-    initialDelay: {{initialDelay}}
+    initialDelay: {{isReadyDelay}}
     timeout: 2
   resources:
     limits:

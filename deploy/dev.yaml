@@ -10,6 +10,7 @@ tenant: trygdeetaten.no
 kafka_pool: nav-dev
 
 initialDelay: 20
+isReadyDelay: 20
 
 replicasMin: 2
 replicasMax: 4
