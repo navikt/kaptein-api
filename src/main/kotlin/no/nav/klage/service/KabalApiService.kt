@@ -9,6 +9,8 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.utils.io.*
+import no.nav.klage.domain.Behandling
+import no.nav.klage.oppgave.util.ourJacksonObjectMapper
 import no.nav.klage.repository.BehandlingRepository
 import org.slf4j.LoggerFactory
 
@@ -44,15 +46,17 @@ object KabalApiService {
             header("Authorization", "Bearer ${tokenResponse.access_token}")
         }
 
+        val behandlingList = mutableListOf<Behandling>()
+
         // Check if the response is successful and then stream the body
         if (response.status.isSuccess()) {
             val channel = response.bodyAsChannel()
             while (!channel.isClosedForRead) {
-                val packet = channel.readRemaining(1024) // Read in chunks
-                // TODO: Process
-                val readText = packet.readText()
-                logger.debug("Received chunk: $readText")
-                println(readText)
+                val behandlingAsString = channel.readUTF8Line()
+                if (!behandlingAsString.isNullOrBlank()) {
+                    behandlingList += ourJacksonObjectMapper().readValue(behandlingAsString, Behandling::class.java)
+                }
+                logger.debug("Received line: $behandlingAsString")
             }
         }
 
