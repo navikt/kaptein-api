@@ -48,6 +48,7 @@ object KabalApiService {
         }
 
         val behandlingList = mutableListOf<Behandling>()
+        var counter = 0
 
         try {
             // Check if the response is successful and then stream the body
@@ -62,6 +63,7 @@ object KabalApiService {
                     println(behandlingAsString)
                     if (!behandlingAsString.isNullOrBlank()) {
                         behandlingList += ourJacksonObjectMapper().readValue(behandlingAsString, Behandling::class.java)
+                        logger.debug("Added behandling number ${++counter}")
                     }
                 }
             }
