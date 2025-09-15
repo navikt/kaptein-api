@@ -11,7 +11,6 @@ import io.ktor.serialization.jackson.*
 import io.ktor.utils.io.*
 import no.nav.klage.domain.Behandling
 import no.nav.klage.oppgave.util.ourJacksonObjectMapper
-import no.nav.klage.repository.BehandlingRepository
 import org.slf4j.LoggerFactory
 
 object KabalApiService {
@@ -50,31 +49,34 @@ object KabalApiService {
         val behandlingList = mutableListOf<Behandling>()
         var counter = 0
 
-        try {
-            // Check if the response is successful and then stream the body
-            if (response.status.isSuccess()) {
-                logger.debug("Response status is successful: {}", response.status)
-                println("Response status: ${response.status}")
-                val channel = response.bodyAsChannel()
-                while (!channel.isClosedForRead && counter < 2000) {
-                    logger.debug("Reading line from stream")
-                    val behandlingAsString = channel.readUTF8Line()
-                    println(behandlingAsString)
-                    if (!behandlingAsString.isNullOrBlank()) {
-                        behandlingList += ourJacksonObjectMapper().readValue(behandlingAsString, Behandling::class.java)
-                    }
-                    if (++counter % 100 == 0) {
-                        logger.debug("Fetched $counter behandlinger so far...")
+        if (cluster != "prod-gcp") {
+            try {
+                // Check if the response is successful and then stream the body
+                if (response.status.isSuccess()) {
+                    logger.debug("Response status is successful: {}", response.status)
+                    println("Response status: ${response.status}")
+                    val channel = response.bodyAsChannel()
+                    while (!channel.isClosedForRead) {
+                        logger.debug("Reading line from stream")
+                        val behandlingAsString = channel.readUTF8Line()
+                        println(behandlingAsString)
+                        if (!behandlingAsString.isNullOrBlank()) {
+                            behandlingList += ourJacksonObjectMapper().readValue(
+                                behandlingAsString,
+                                Behandling::class.java
+                            )
+                        }
+                        if (++counter % 100 == 0) {
+                            logger.debug("Fetched $counter behandlinger so far...")
+                        }
                     }
                 }
+            } catch (e: Exception) {
+                logger.error("Error while fetching or processing behandlinger: ", e)
+                println("Error while fetching or processing behandlinger: ${e.message}")
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            logger.error("Error while fetching or processing behandlinger: ", e)
-            println("Error while fetching or processing behandlinger: ${e.message}")
-            e.printStackTrace()
         }
-
-        BehandlingRepository.clearAndAddAll(behandlingList)
     }
 }
 
