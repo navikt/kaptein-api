@@ -30,19 +30,19 @@ spec:
   port: 8080
   startup:
     failureThreshold: 20
-    initialDelay: 15
+    initialDelay: 30
     path: /internal/health
     periodSeconds: 10
-    timeout: 2
+    timeout: 4
   liveness:
     path: /internal/health
-    initialDelay: 15
+    initialDelay: 40
     timeout: 1
     periodSeconds: 5
     failureThreshold: 10
   readiness:
     path: /internal/isready
-    initialDelay: 10
+    initialDelay: 40
     timeout: 2
   resources:
     limits:
