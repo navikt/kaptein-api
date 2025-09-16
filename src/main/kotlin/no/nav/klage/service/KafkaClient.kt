@@ -1,7 +1,6 @@
 package no.nav.klage.service
 
 import io.ktor.util.logging.*
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.apache.kafka.clients.CommonClientConfigs
@@ -17,14 +16,15 @@ object KafkaClient {
 
     private val logger = KtorSimpleLogger(KafkaClient::class.java.name)
 
-    suspend fun startKafkaListener(): Job {
-        val scope = coroutineScope {
+    suspend fun startKafkaListener() {
+        coroutineScope {
             launch { readFromTopic("klage.kaptein-behandling.v1") }
         }
-        return scope
+        logger.debug("Kafka listener started")
     }
 
     suspend fun readFromTopic(topic: String) {
+        logger.debug("Starting Kafka listener for topic $topic")
         val consumer = KafkaConsumer<String, String>(consumerConfig())
         coroutineScope {
             consumer.subscribe(listOf(topic))
