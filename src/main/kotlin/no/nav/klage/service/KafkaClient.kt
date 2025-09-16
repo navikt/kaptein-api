@@ -1,29 +1,28 @@
 package no.nav.klage.service
 
+import io.ktor.util.logging.*
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG
-import org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
-import org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG
-import org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG
-import org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG
+import org.apache.kafka.clients.consumer.ConsumerConfig.*
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.config.SslConfigs
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.slf4j.LoggerFactory
 import java.time.Duration
-import java.util.UUID
+import java.util.*
 
 object KafkaClient {
 
-    private val logger = LoggerFactory.getLogger(KafkaClient::class.java.name)
+    private val logger = KtorSimpleLogger(KafkaClient::class.java.name)
 
-    suspend fun startKafkaListener() {
-        coroutineScope {
+    suspend fun startKafkaListener(): Job {
+        logger.debug("Starting Kafka listener")
+        val scope = coroutineScope {
             launch { readFromTopic("klage.kaptein-behandling.v1") }
         }
-        logger.debug("Method returning, but consumer will still be active in coroutine scope")
+        return scope
     }
 
     suspend fun readFromTopic(topic: String) {
@@ -34,7 +33,7 @@ object KafkaClient {
                 logger.debug("Polling for messages from topic: $topic")
                 val records = consumer.poll(Duration.ofSeconds(10))
                 for (record in records) {
-                    logger.info("Received message: key=${record.key()}, value=${record.value()}, topic=${record.topic()}, partition=${record.partition()}, offset=${record.offset()}")
+                    logger.debug("Received message: key=${record.key()}, offset=${record.offset()}")
                 }
                 consumer.commitSync()
             }

@@ -1,14 +1,14 @@
 package no.nav.klage.repository
 
+import io.ktor.util.logging.*
 import no.nav.klage.domain.Behandling
-import org.slf4j.LoggerFactory
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
 object BehandlingRepository {
 
-    private val logger = LoggerFactory.getLogger(BehandlingRepository::class.java.name)
+    private val logger = KtorSimpleLogger(BehandlingRepository::class.java.name)
 
     private val lock = ReentrantReadWriteLock()
     private val behandlingSet = mutableSetOf<Behandling>()
@@ -24,26 +24,26 @@ object BehandlingRepository {
         }
     }
 
-    fun addBehandling(behandling: Behandling) {
+    fun addBehandling(incomingBehandling: Behandling) {
         // write lock ensures exclusive access for mutations
         lock.write {
-            if (behandlingSet.contains(behandling)) {
-                logger.debug("Behandling already exists in store, replacing: {}", behandling.id)
-                behandlingSet.remove(behandling)
-                behandlingSet.add(behandling)
+            val behandlingInStore = behandlingSet.find { incomingBehandling.id == it.id }
+            if (behandlingInStore != null) {
+                if (behandlingInStore.modified < incomingBehandling.modified) {
+                    logger.debug("Behandling in store is older than incoming, replacing.")
+                    behandlingSet.remove(incomingBehandling)
+                    behandlingSet.add(incomingBehandling)
+                } else {
+                    logger.debug("Behandling in store is newer than incoming, ignoring incoming.")
+                }
             } else {
-                behandlingSet.add(behandling)
+                behandlingSet.add(incomingBehandling)
                 logger.debug("Added behandling to store. Size is now: {}", behandlingSet.size)
             }
         }
     }
 
-    fun clearAndAddAll(behandlinger: Collection<Behandling>) {
-        lock.write {
-            behandlingSet.clear()
-            behandlingSet.addAll(behandlinger)
-            logger.debug("Added ${behandlinger.size} behandlinger to store. Size is now: {}", behandlingSet.size)
-        }
+    fun setReady() {
         isReady = true
     }
 

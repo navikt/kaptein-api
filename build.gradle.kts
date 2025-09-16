@@ -23,7 +23,6 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.ktor.server.config.yaml)
     implementation(libs.kafka.clients)
-    implementation(libs.kafka.streams)
     implementation(libs.jackson.module.kotlin)
     implementation(libs.jackson.datatype.jsr310)
     implementation(libs.logstash.logback.encoder)

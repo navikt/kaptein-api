@@ -1,17 +1,17 @@
 package no.nav.klage.service
 
+import io.ktor.util.logging.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import no.nav.klage.domain.Behandling
 import no.nav.klage.repository.BehandlingRepository
-import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 object MockKafkaClient {
 
-    private val logger = LoggerFactory.getLogger(MockKafkaClient::class.java.name)
+    private val logger = KtorSimpleLogger(MockKafkaClient::class.java.name)
 
     suspend fun consumeMessages() {
         logger.debug("Mock consuming messages from Kafka")

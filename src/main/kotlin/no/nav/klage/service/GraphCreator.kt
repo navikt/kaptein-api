@@ -1,16 +1,16 @@
 package no.nav.klage.service
 
+import io.ktor.util.logging.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.nav.klage.domain.Behandling
 import no.nav.klage.repository.BehandlingRepository
-import org.slf4j.LoggerFactory
 
 object GraphCreator {
 
-    private val logger = LoggerFactory.getLogger(GraphCreator::class.java.name)
+    private val logger = KtorSimpleLogger(GraphCreator::class.java.name)
 
     //TODO return something
     suspend fun calculateGraphs() {

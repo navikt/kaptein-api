@@ -1,10 +1,10 @@
 package no.nav.klage.service
 
+import io.ktor.util.logging.*
 import no.nav.klage.domain.*
 import no.nav.klage.repository.BehandlingRepository
-import org.slf4j.LoggerFactory
 
-private val logger = LoggerFactory.getLogger("BehandlingService")
+private val logger = KtorSimpleLogger("no.nav.klage.service.BehandlingService")
 
 suspend fun getBehandlingListLedige(): BehandlingerActiveResponseView {
     logger.debug("getBehandlingListLedige")

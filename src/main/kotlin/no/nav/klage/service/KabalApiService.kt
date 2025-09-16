@@ -8,17 +8,18 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
+import io.ktor.util.logging.*
 import io.ktor.utils.io.*
 import no.nav.klage.domain.Behandling
 import no.nav.klage.oppgave.util.ourJacksonObjectMapper
 import no.nav.klage.repository.BehandlingRepository
-import org.slf4j.LoggerFactory
 
 object KabalApiService {
 
-    private val logger = LoggerFactory.getLogger(KabalApiService::class.java.name)
+    private val logger = KtorSimpleLogger(KabalApiService::class.java.name)
 
     suspend fun fetchAndStoreBehandlinger() {
+        logger.debug("fetchAndStoreBehandlinger")
         val client = HttpClient(CIO) {
             install(ContentNegotiation) {
                 jackson()
@@ -47,7 +48,6 @@ object KabalApiService {
             header("Authorization", "Bearer ${tokenResponse.access_token}")
         }
 
-        val behandlingList = mutableListOf<Behandling>()
         var counter = 0
 
         if (cluster != "prod-gcp") {
@@ -55,16 +55,15 @@ object KabalApiService {
                 // Check if the response is successful and then stream the body
                 if (response.status.isSuccess()) {
                     logger.debug("Response status is successful: {}", response.status)
-                    println("Response status: ${response.status}")
                     val channel = response.bodyAsChannel()
                     while (!channel.isClosedForRead) {
-                        logger.debug("Reading line from stream")
                         val behandlingAsString = channel.readUTF8Line()
-                        println(behandlingAsString)
                         if (!behandlingAsString.isNullOrBlank()) {
-                            behandlingList += ourJacksonObjectMapper().readValue(
-                                behandlingAsString,
-                                Behandling::class.java
+                            BehandlingRepository.addBehandling(
+                                ourJacksonObjectMapper().readValue(
+                                    behandlingAsString,
+                                    Behandling::class.java
+                                )
                             )
                         }
                         if (++counter % 100 == 0) {
@@ -74,11 +73,9 @@ object KabalApiService {
                 }
             } catch (e: Exception) {
                 logger.error("Error while fetching or processing behandlinger: ", e)
-                println("Error while fetching or processing behandlinger: ${e.message}")
-                e.printStackTrace()
             }
         }
-        BehandlingRepository.clearAndAddAll(behandlingList)
+        BehandlingRepository.setReady()
     }
 }
 

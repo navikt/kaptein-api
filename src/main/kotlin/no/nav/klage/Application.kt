@@ -14,7 +14,6 @@ import no.nav.klage.service.KabalApiService
 import no.nav.klage.service.KafkaClient
 import no.nav.klage.service.MockKafkaClient
 import no.nav.klage.web.configureRouting
-import org.slf4j.LoggerFactory
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -23,8 +22,6 @@ import java.util.*
 fun main(args: Array<String>) {
     EngineMain.main(args)
 }
-
-private val logger = LoggerFactory.getLogger("main")
 
 val Application.envKind get() = environment.config.property("ktor.development").getString()
 val Application.isDevelopmentMode get() = envKind == "true"
@@ -43,15 +40,12 @@ suspend fun Application.module() {
     install(OpenApi)
 
     if (isProductionMode) {
-        val fetchJob = launch {
-            KabalApiService.fetchAndStoreBehandlinger()
-        }
+        //first start kafka listener to be ready to consume messages as soon as possible
+        KafkaClient.startKafkaListener().join()
+        log.info("Kafka listener should now be started")
 
-        fetchJob.join()
-
-        launch {
-            KafkaClient.startKafkaListener()
-        }
+        //then fetch existing behandlinger from kabal api
+        KabalApiService.fetchAndStoreBehandlinger()
     } else if (isDevelopmentMode) {
         addMockBehandlinger()
         launch {
@@ -59,7 +53,7 @@ suspend fun Application.module() {
         }
     }
 
-    logger.debug("Application is running in ${if (isDevelopmentMode) "development/local" else "production"} mode")
+    log.info("Application is running in ${if (isDevelopmentMode) "development/local" else "production"} mode")
 
 //    configureSockets()
     configureRouting()
