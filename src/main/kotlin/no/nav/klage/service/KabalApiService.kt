@@ -19,6 +19,7 @@ object KabalApiService {
     private val logger = KtorSimpleLogger(KabalApiService::class.java.name)
 
     suspend fun fetchAndStoreBehandlinger() {
+        val start = System.currentTimeMillis()
         logger.debug("fetchAndStoreBehandlinger")
         val client = HttpClient(CIO) {
             install(ContentNegotiation) {
@@ -75,6 +76,7 @@ object KabalApiService {
                 logger.error("Error while fetching or processing behandlinger: ", e)
             }
         }
+        logger.debug("Fetched total of $counter behandlinger in ${System.currentTimeMillis() - start} ms. Setting application as ready (k8s).")
         BehandlingRepository.setReady()
     }
 }
