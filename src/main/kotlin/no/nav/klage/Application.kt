@@ -8,12 +8,14 @@ import io.ktor.server.netty.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.contentnegotiation.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import no.nav.klage.domain.Behandling
 import no.nav.klage.repository.BehandlingRepository
 import no.nav.klage.service.KabalApiService
 import no.nav.klage.service.MockKafkaClient
 import no.nav.klage.web.configureRouting
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -53,7 +55,11 @@ suspend fun Application.module() {
 //        log.info("Kafka listener should now be started")
 
         //then fetch existing behandlinger from kabal api
-        KabalApiService.fetchAndStoreBehandlinger()
+        launch {
+            withTimeout(Duration.ofMinutes(15).toMillis()) {
+                KabalApiService.fetchAndStoreBehandlinger()
+            }
+        }
     } else if (isDevelopmentMode) {
         addMockBehandlinger()
         launch {
