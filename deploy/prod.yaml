@@ -12,8 +12,8 @@ kafka_pool: nav-prod
 
 initialIsStartedDelay: 60
 
-replicasMin: 1
-replicasMax: 1
+replicasMin: 2
+replicasMax: 3
 
 adRoles:
   - name: KABAL_OPPGAVESTYRING_ALLE_ENHETER_ROLE_ID
@@ -43,4 +43,4 @@ adRoles:
 
 envs:
   - name: JAVA_OPTS
-    value: "-Xms512m -Xmx8192m"
+    value: "-Xms512m -Xmx1024m"
