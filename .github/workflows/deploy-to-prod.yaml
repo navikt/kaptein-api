@@ -39,6 +39,7 @@ jobs:
         uses: nais/deploy/actions/deploy@v2
         env:
           TEAM: klage
+          TIMEOUT: 20m
           CLUSTER: prod-gcp
           VARS: deploy/prod.yaml
           RESOURCE: deploy/nais.yaml
