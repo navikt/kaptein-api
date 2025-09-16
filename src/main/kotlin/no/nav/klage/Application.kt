@@ -28,17 +28,22 @@ val Application.isDevelopmentMode get() = envKind == "true"
 val Application.isProductionMode get() = envKind == "false"
 
 suspend fun Application.module() {
+    log.info("installing modules")
+    log.info("installing content negotiation")
     install(ContentNegotiation) {
         jackson {
             registerModule(JavaTimeModule())
             dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
         }
     }
+    log.info("installing compression")
     install(Compression) {
         gzip()
     }
+    log.info("installing OpenApi")
     install(OpenApi)
 
+    log.info("configuring routing")
     configureRouting()
 
     if (isProductionMode) {
