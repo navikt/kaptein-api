@@ -29,7 +29,6 @@ object KafkaClient {
         coroutineScope {
             consumer.subscribe(listOf(topic))
             while (true) {
-                logger.debug("Polling for messages from topic: $topic")
                 val records = consumer.poll(Duration.ofSeconds(10))
                 for (record in records) {
                     logger.debug("Received message: key=${record.key()}, offset=${record.offset()}")
