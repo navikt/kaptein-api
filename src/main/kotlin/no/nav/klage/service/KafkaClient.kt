@@ -18,7 +18,6 @@ object KafkaClient {
     private val logger = KtorSimpleLogger(KafkaClient::class.java.name)
 
     suspend fun startKafkaListener(): Job {
-        logger.debug("Starting Kafka listener")
         val scope = coroutineScope {
             launch { readFromTopic("klage.kaptein-behandling.v1") }
         }

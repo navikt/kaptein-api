@@ -40,7 +40,9 @@ suspend fun Application.module() {
     install(OpenApi)
 
     if (isProductionMode) {
+        log.info("Application is running in production mode.")
         //first start kafka listener to be ready to consume messages as soon as possible
+        log.info("Starting Kafka listener")
         KafkaClient.startKafkaListener().join()
         log.info("Kafka listener should now be started")
 
