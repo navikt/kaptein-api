@@ -39,6 +39,8 @@ suspend fun Application.module() {
     }
     install(OpenApi)
 
+    configureRouting()
+
     if (isProductionMode) {
         log.info("Application is running in production mode.")
         //first start kafka listener to be ready to consume messages as soon as possible
@@ -58,7 +60,6 @@ suspend fun Application.module() {
     log.info("Application is running in ${if (isDevelopmentMode) "development/local" else "production"} mode")
 
 //    configureSockets()
-    configureRouting()
 }
 
 private fun addMockBehandlinger() {
