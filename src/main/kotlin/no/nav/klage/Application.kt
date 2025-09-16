@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import no.nav.klage.domain.Behandling
 import no.nav.klage.repository.BehandlingRepository
 import no.nav.klage.service.KabalApiService
-import no.nav.klage.service.KafkaClient
 import no.nav.klage.service.MockKafkaClient
 import no.nav.klage.web.configureRouting
 import java.text.SimpleDateFormat
@@ -49,9 +48,9 @@ suspend fun Application.module() {
     if (isProductionMode) {
         log.info("Application is running in production mode.")
         //first start kafka listener to be ready to consume messages as soon as possible
-        log.info("Starting Kafka listener")
-        KafkaClient.startKafkaListener().join()
-        log.info("Kafka listener should now be started")
+//        log.info("Starting Kafka listener")
+//        KafkaClient.startKafkaListener().join()
+//        log.info("Kafka listener should now be started")
 
         //then fetch existing behandlinger from kabal api
         KabalApiService.fetchAndStoreBehandlinger()
