@@ -1,9 +1,8 @@
 FROM gcr.io/distroless/java21-debian12:nonroot
 WORKDIR /app
-COPY build/install/kaptein-api/lib /lib
-COPY build/resources/main/logback.xml /lib/logback-kaptein-api.xml
-ENV JAVA_OPTS="-Dlogback.configurationFile=logback-kaptein-api.xml"
+COPY build/install/*/lib /lib
+COPY src/main/resources/logback.xml /app/logback.xml
 ENV TZ="Europe/Oslo"
 EXPOSE 8080
 USER nonroot
-ENTRYPOINT ["java", "-cp", "/lib/*", "no.nav.klage.ApplicationKt"]
+ENTRYPOINT ["java", "-Dlogback.configurationFile=/app/logback.xml", "-cp", "/app:/lib/*", "no.nav.klage.ApplicationKt"]

@@ -20,7 +20,7 @@ fun Application.configureRouting() {
             openApi()
         }
 
-        route("/swagger") {
+        route("/swagger-ui") {
             swaggerUI("/api.json")
         }
 
