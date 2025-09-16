@@ -57,7 +57,7 @@ suspend fun getBehandlingListFerdigstilte(): BehandlingerFinishedResponseView {
                 behandling.isAvsluttetAvSaksbehandler
     }.map {
         BehandlingFinishedView(
-            id = it.id,
+            id = it.id.toString(),
             ytelseId = it.ytelseId,
             typeId = it.typeId,
             avsluttetAvSaksbehandlerDate = it.avsluttetAvSaksbehandlerDate,
@@ -84,7 +84,7 @@ suspend fun getBehandlingListFerdigstilte(): BehandlingerFinishedResponseView {
 
 fun Behandling.toActiveView(): BehandlingActiveView {
     return BehandlingActiveView(
-        id = this.id,
+        id = this.id.toString(),
         ytelseId = this.ytelseId,
         typeId = this.typeId,
         isTildelt = this.isTildelt,

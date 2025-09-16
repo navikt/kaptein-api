@@ -2,7 +2,6 @@ package no.nav.klage.domain
 
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
 
 data class BehandlingerFinishedResponseView(
     val behandlinger: List<BehandlingFinishedView>,
@@ -15,7 +14,7 @@ data class BehandlingerActiveResponseView(
 )
 
 data class BehandlingFinishedView(
-    val id: UUID,
+    val id: String,
     val ytelseId: String,
     val typeId: String,
     val avsluttetAvSaksbehandlerDate: LocalDate?,
@@ -35,7 +34,7 @@ data class BehandlingFinishedView(
 }
 
 data class BehandlingActiveView(
-    val id: UUID,
+    val id: String,
     val ytelseId: String,
     val typeId: String,
     val isTildelt: Boolean,
