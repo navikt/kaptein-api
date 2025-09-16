@@ -61,7 +61,7 @@ suspend fun getBehandlingListFerdigstilte(): BehandlingerFinishedResponseView {
             ytelseId = it.ytelseId,
             typeId = it.typeId,
             avsluttetAvSaksbehandlerDate = it.avsluttetAvSaksbehandlerDate,
-            tildeltEnhet = it.tildeltEnhet,
+            tildeltEnhet = it.tildeltEnhet!!,
             frist = it.frist,
             ageKA = it.ageKA,
             hjemmelIdList = it.hjemmelIdList,
@@ -97,6 +97,26 @@ fun Behandling.toActiveView(): BehandlingActiveView {
             reasonId = this.sattPaaVent.reasonId
         ) else null,
         varsletFrist = this.varsletFrist,
-        tilbakekreving = this.tilbakekreving
+        tilbakekreving = this.hjemmelIdList.isTilbakekreving()
     )
+}
+
+private fun List<String>.isTilbakekreving(): Boolean {
+    val tilbakekrevinghjemler = setOf(
+        "FTRL_22_15_TILBAKEKREVING",
+        "FTRL_22_15_TILBAKEKREVING_DOEDSBO",
+        "1000.022.015",
+        "FTRL_22_15_1_1",
+        "FTRL_22_15_1_2",
+        "FTRL_22_15_2",
+        "FTRL_22_15_4",
+        "FTRL_22_15_5",
+        "FTRL_22_15_6",
+        "FTRL_22_17A",
+        "FTRL_4_28",
+        "596",
+        "614",
+        "706",
+    )
+    return this.any { it in tilbakekrevinghjemler }
 }
