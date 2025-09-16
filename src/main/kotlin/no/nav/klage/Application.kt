@@ -55,10 +55,15 @@ suspend fun Application.module() {
 //        log.info("Kafka listener should now be started")
 
         //then fetch existing behandlinger from kabal api
-        launch {
-            withTimeout(Duration.ofMinutes(15).toMillis()) {
-                KabalApiService.fetchAndStoreBehandlinger()
+        try {
+            launch {
+                withTimeout(Duration.ofMinutes(15).toMillis()) {
+                    KabalApiService.fetchAndStoreBehandlinger()
+                }
             }
+        } catch (e: Exception) {
+            log.error("Error fetching behandlinger from Kabal API", e)
+            throw e
         }
     } else if (isDevelopmentMode) {
         addMockBehandlinger()
