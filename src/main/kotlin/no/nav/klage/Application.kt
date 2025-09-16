@@ -52,7 +52,9 @@ suspend fun Application.module() {
         log.info("Application is running in production mode.")
         //first start kafka listener to be ready to consume messages as soon as possible
         log.info("Starting Kafka listener")
-        KafkaClient.startKafkaListener().join()
+        launch {
+            KafkaClient.startKafkaListener()
+        }.join()
         log.info("Kafka listener is now started")
 
         //then fetch existing behandlinger from kabal api
