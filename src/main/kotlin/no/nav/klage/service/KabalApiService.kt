@@ -3,6 +3,7 @@ package no.nav.klage.service
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -42,16 +43,19 @@ object KabalApiService {
             )
         }.body<TokenResponse>()
 
-        logger.debug("About to fetch behandlinger from Kabal API")
-        val response = client.get("http://kabal-api/api/kaptein/behandlinger-stream") {
-            contentType(ContentType.Application.Json)
-            header("Accept", "application/x-ndjson")
-            header("Authorization", "Bearer ${tokenResponse.access_token}")
-        }
-
         var counter = 0
 
         if (cluster != "prod-gcp") {
+            logger.debug("About to fetch behandlinger from Kabal API")
+            val response = client.get("http://kabal-api/api/kaptein/behandlinger-stream") {
+                timeout {
+                    requestTimeoutMillis = 1000 * 60 * 5
+                }
+                contentType(ContentType.Application.Json)
+                header("Accept", "application/x-ndjson")
+                header("Authorization", "Bearer ${tokenResponse.access_token}")
+            }
+
             try {
                 // Check if the response is successful and then stream the body
                 if (response.status.isSuccess()) {

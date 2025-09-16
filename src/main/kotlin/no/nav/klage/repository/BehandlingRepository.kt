@@ -38,7 +38,6 @@ object BehandlingRepository {
                 }
             } else {
                 behandlingSet.add(incomingBehandling)
-                logger.debug("Added behandling to store. Size is now: {}", behandlingSet.size)
             }
         }
     }
