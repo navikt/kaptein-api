@@ -45,41 +45,40 @@ object KabalApiService {
 
         var counter = 0
 
-        if (cluster != "prod-gcp") {
-            logger.debug("About to fetch behandlinger from Kabal API")
-            val response = client.get("http://kabal-api/api/kaptein/behandlinger-stream") {
-                timeout {
-                    requestTimeoutMillis = 1000 * 60 * 5
-                }
-                contentType(ContentType.Application.Json)
-                header("Accept", "application/x-ndjson")
-                header("Authorization", "Bearer ${tokenResponse.access_token}")
+        logger.debug("About to fetch behandlinger from Kabal API")
+        val response = client.get("http://kabal-api/api/kaptein/behandlinger-stream") {
+            timeout {
+                requestTimeoutMillis = 1000 * 60 * 5
             }
+            contentType(ContentType.Application.Json)
+            header("Accept", "application/x-ndjson")
+            header("Authorization", "Bearer ${tokenResponse.access_token}")
+        }
 
-            try {
-                // Check if the response is successful and then stream the body
-                if (response.status.isSuccess()) {
-                    logger.debug("Response status is successful: {}", response.status)
-                    val channel = response.bodyAsChannel()
-                    while (!channel.isClosedForRead) {
-                        val behandlingAsString = channel.readUTF8Line()
-                        if (!behandlingAsString.isNullOrBlank()) {
-                            BehandlingRepository.addBehandling(
-                                ourJacksonObjectMapper().readValue(
-                                    behandlingAsString,
-                                    Behandling::class.java
-                                )
+        try {
+            // Check if the response is successful and then stream the body
+            if (response.status.isSuccess()) {
+                logger.debug("Response status is successful: {}", response.status)
+                val channel = response.bodyAsChannel()
+                while (!channel.isClosedForRead) {
+                    val behandlingAsString = channel.readUTF8Line()
+                    if (!behandlingAsString.isNullOrBlank()) {
+                        BehandlingRepository.addBehandling(
+                            ourJacksonObjectMapper().readValue(
+                                behandlingAsString,
+                                Behandling::class.java
                             )
-                        }
-                        if (++counter % 100 == 0) {
-                            logger.debug("Fetched $counter behandlinger so far...")
-                        }
+                        )
+                    }
+                    if (++counter % 100 == 0) {
+                        logger.debug("Fetched $counter behandlinger so far...")
                     }
                 }
-            } catch (e: Exception) {
-                logger.error("Error while fetching or processing behandlinger: ", e)
             }
+        } catch (e: Exception) {
+            logger.error("Error while fetching or processing behandlinger: ", e)
         }
+
         logger.debug("Fetched total of $counter behandlinger in ${System.currentTimeMillis() - start} ms. Setting application as ready (k8s).")
         BehandlingRepository.setReady()
     }

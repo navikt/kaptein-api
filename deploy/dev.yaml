@@ -9,11 +9,10 @@ springProfile: dev-gcp
 tenant: trygdeetaten.no
 kafka_pool: nav-dev
 
-initialDelay: 20
-isReadyDelay: 20
+initialIsStartedDelay: 20
 
-replicasMin: 2
-replicasMax: 4
+replicasMin: 1
+replicasMax: 1
 
 adRoles:
   - name: KABAL_OPPGAVESTYRING_ALLE_ENHETER_ROLE_ID

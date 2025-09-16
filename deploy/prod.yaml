@@ -10,11 +10,10 @@ tenant: nav.no
 
 kafka_pool: nav-prod
 
-initialDelay: 20
-isReadyDelay: 20
+initialIsStartedDelay: 60
 
-replicasMin: 2
-replicasMax: 4
+replicasMin: 1
+replicasMax: 1
 
 adRoles:
   - name: KABAL_OPPGAVESTYRING_ALLE_ENHETER_ROLE_ID
