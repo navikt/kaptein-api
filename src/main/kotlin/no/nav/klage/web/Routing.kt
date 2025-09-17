@@ -1,5 +1,6 @@
 package no.nav.klage.web
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import io.github.smiley4.ktoropenapi.get
 import io.github.smiley4.ktoropenapi.openApi
 import io.github.smiley4.ktorswaggerui.swaggerUI
@@ -117,6 +118,7 @@ private data class ValidateTokenRequest(
     val token: String,
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 private data class ValidateTokenResponse(
     val active: Boolean,
     val error: String?,
