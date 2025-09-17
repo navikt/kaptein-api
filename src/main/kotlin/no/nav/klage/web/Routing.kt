@@ -68,6 +68,7 @@ fun Application.configureRouting() {
         }
 
         get("/internal/isstarted") {
+            log
             if (BehandlingRepository.isReady()) {
                 call.respond(HttpStatusCode.OK)
             } else {
@@ -80,7 +81,8 @@ fun Application.configureRouting() {
 suspend fun RoutingCall.validateToken() {
     val token = this.request.headers["Authorization"]?.removePrefix("Bearer ")?.trim()
     if (token == null || token.isEmpty()) {
-        this.respond(HttpStatusCode.Forbidden)
+        this.application.log.warn("Missing or empty Authorization header")
+        this.respond(HttpStatusCode.Unauthorized)
     } else {
         val tokenEndpoint = System.getenv("NAIS_TOKEN_INTROSPECTION_ENDPOINT")
 
@@ -104,6 +106,7 @@ suspend fun RoutingCall.validateToken() {
         if (validateTokenResponse.active) {
             return
         } else {
+            this.application.log.warn("Token validation failed due to: {}", validateTokenResponse.error)
             this.respond(HttpStatusCode.Forbidden, validateTokenResponse.error ?: "Invalid token")
         }
     }
