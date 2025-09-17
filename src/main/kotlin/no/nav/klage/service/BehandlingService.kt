@@ -60,7 +60,7 @@ fun getBehandlingListFerdigstilte(): BehandlingerFinishedResponseView {
             id = it.id.toString(),
             ytelseId = it.ytelseId,
             typeId = it.typeId,
-            avsluttetAvSaksbehandlerDate = it.avsluttetAvSaksbehandlerDate,
+            avsluttetAvSaksbehandlerDate = it.avsluttetAvSaksbehandlerDate!!,
             tildeltEnhet = it.tildeltEnhet!!,
             frist = it.frist,
             ageKA = it.ageKA,

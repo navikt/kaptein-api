@@ -17,7 +17,7 @@ data class BehandlingFinishedView(
     val id: String,
     val ytelseId: String,
     val typeId: String,
-    val avsluttetAvSaksbehandlerDate: LocalDate?,
+    val avsluttetAvSaksbehandlerDate: LocalDate,
     val tildeltEnhet: String,
     val frist: LocalDate?,
     val ageKA: Int,
