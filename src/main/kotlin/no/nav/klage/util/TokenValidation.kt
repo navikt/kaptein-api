@@ -26,6 +26,7 @@ suspend fun RoutingCall.validateToken() {
         logger.warn("Missing or empty Authorization header")
         this.respond(HttpStatusCode.Unauthorized)
     } else {
+        val start = System.currentTimeMillis()
         val tokenEndpoint = System.getenv("NAIS_TOKEN_INTROSPECTION_ENDPOINT")
 
         val validateTokenResponse = tokenValidationClient.post(tokenEndpoint) {
@@ -38,6 +39,7 @@ suspend fun RoutingCall.validateToken() {
                 ),
             )
         }.body<ValidateTokenResponse>()
+        logger.debug("Validate token response took ${System.currentTimeMillis() - start} ms")
 
         if (validateTokenResponse.active) {
             return
