@@ -50,8 +50,8 @@ spec:
     limits:
       memory: 1Gi
     requests:
-      cpu: 50m
-      memory: 700Mi
+      cpu: 100m
+      memory: 800Mi
   ingresses:
   {{#each ingresses as |ingress|}}
     - {{ingress}}
@@ -59,7 +59,9 @@ spec:
   replicas:
     min: {{replicasMin}}
     max: {{replicasMax}}
-    cpuThresholdPercentage: 80
+    scalingStrategy:
+      cpu:
+        thresholdPercentage: 90
   accessPolicy:
     inbound:
       rules:
