@@ -3,6 +3,9 @@ package no.nav.klage.service
 import io.ktor.util.logging.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import no.nav.klage.domain.Behandling
+import no.nav.klage.oppgave.util.ourJacksonObjectMapper
+import no.nav.klage.repository.BehandlingRepository
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG
 import org.apache.kafka.clients.consumer.ConsumerConfig.*
@@ -32,6 +35,12 @@ object KafkaClient {
                 val records = consumer.poll(Duration.ofSeconds(10))
                 for (record in records) {
                     logger.debug("Received message: key=${record.key()}, offset=${record.offset()}")
+                    BehandlingRepository.addBehandling(
+                        ourJacksonObjectMapper().readValue(
+                            record.value(),
+                            Behandling::class.java
+                        )
+                    )
                 }
                 consumer.commitSync()
             }

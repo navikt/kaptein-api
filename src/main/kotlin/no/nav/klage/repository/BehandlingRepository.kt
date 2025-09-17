@@ -31,7 +31,7 @@ object BehandlingRepository {
             if (behandlingInStore != null) {
                 if (behandlingInStore.modified < incomingBehandling.modified) {
                     logger.debug("Behandling in store is older than incoming, replacing.")
-                    behandlingSet.remove(incomingBehandling)
+                    behandlingSet.remove(behandlingInStore)
                     behandlingSet.add(incomingBehandling)
                 } else {
                     logger.debug("Behandling in store is newer than incoming, ignoring incoming.")
