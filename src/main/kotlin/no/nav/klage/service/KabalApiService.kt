@@ -79,6 +79,8 @@ object KabalApiService {
             logger.error("Error while fetching or processing behandlinger: ", e)
         }
 
+        client.close()
+
         logger.debug("Fetched total of $counter behandlinger in ${System.currentTimeMillis() - start} ms. Setting application as ready (k8s).")
         BehandlingRepository.setReady()
     }
