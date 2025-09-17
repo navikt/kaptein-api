@@ -6,7 +6,7 @@ import no.nav.klage.repository.BehandlingRepository
 
 private val logger = KtorSimpleLogger("no.nav.klage.service.BehandlingService")
 
-suspend fun getBehandlingListLedige(): BehandlingerActiveResponseView {
+fun getBehandlingListLedige(): BehandlingerActiveResponseView {
     logger.debug("getBehandlingListLedige")
     val start = System.currentTimeMillis()
     val behandlingList = BehandlingRepository.getBehandlingListCopyForReadOnly()
@@ -26,7 +26,7 @@ suspend fun getBehandlingListLedige(): BehandlingerActiveResponseView {
     )
 }
 
-suspend fun getBehandlingListTildelte(): BehandlingerActiveResponseView {
+fun getBehandlingListTildelte(): BehandlingerActiveResponseView {
     logger.debug("getBehandlingListTildelte")
     val start = System.currentTimeMillis()
     val behandlingList = BehandlingRepository.getBehandlingListCopyForReadOnly()
@@ -46,7 +46,7 @@ suspend fun getBehandlingListTildelte(): BehandlingerActiveResponseView {
     )
 }
 
-suspend fun getBehandlingListFerdigstilte(): BehandlingerFinishedResponseView {
+fun getBehandlingListFerdigstilte(): BehandlingerFinishedResponseView {
     logger.debug("getBehandlingListFerdigstilte")
     val start = System.currentTimeMillis()
     val behandlingList = BehandlingRepository.getBehandlingListCopyForReadOnly()
