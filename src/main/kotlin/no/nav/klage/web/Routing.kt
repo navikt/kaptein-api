@@ -13,6 +13,7 @@ import no.nav.klage.repository.BehandlingRepository
 import no.nav.klage.service.getBehandlingListFerdigstilte
 import no.nav.klage.service.getBehandlingListLedige
 import no.nav.klage.service.getBehandlingListTildelte
+import no.nav.klage.util.validateToken
 
 fun Application.configureRouting() {
     routing {
@@ -31,6 +32,7 @@ fun Application.configureRouting() {
                 }
             }
         }) {
+            call.validateToken()
             call.respond(getBehandlingListLedige())
         }
 
@@ -41,6 +43,7 @@ fun Application.configureRouting() {
                 }
             }
         }) {
+            call.validateToken()
             call.respond(getBehandlingListTildelte())
         }
 
@@ -51,6 +54,7 @@ fun Application.configureRouting() {
                 }
             }
         }) {
+            call.validateToken()
             call.respond(getBehandlingListFerdigstilte())
         }
 

@@ -32,16 +32,16 @@ object KabalApiService {
         val cluster = System.getenv("NAIS_CLUSTER_NAME")
         val target = "api://$cluster.klage.kabal-api/.default"
 
-        val tokenResponse = client.post(tokenEndpoint) {
+        val acquireTokenResponse = client.post(tokenEndpoint) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
             setBody(
-                TokenRequest(
+                AcquireTokenRequest(
                     identity_provider = "azuread",
                     target = target,
                 ),
             )
-        }.body<TokenResponse>()
+        }.body<AcquireTokenResponse>()
 
         var counter = 0
 
@@ -52,7 +52,7 @@ object KabalApiService {
             }
             contentType(ContentType.Application.Json)
             header("Accept", "application/x-ndjson")
-            header("Authorization", "Bearer ${tokenResponse.access_token}")
+            header("Authorization", "Bearer ${acquireTokenResponse.access_token}")
         }
 
         try {
@@ -79,17 +79,19 @@ object KabalApiService {
             logger.error("Error while fetching or processing behandlinger: ", e)
         }
 
+        client.close()
+
         logger.debug("Fetched total of $counter behandlinger in ${System.currentTimeMillis() - start} ms. Setting application as ready (k8s).")
         BehandlingRepository.setReady()
     }
 }
 
-data class TokenRequest(
+private data class AcquireTokenRequest(
     val identity_provider: String,
     val target: String,
 )
 
-data class TokenResponse(
+private data class AcquireTokenResponse(
     val access_token: String,
     val token_type: String,
     val expires_in: Int,

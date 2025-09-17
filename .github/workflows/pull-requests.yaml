@@ -19,7 +19,7 @@ jobs:
           java-version: 21
           distribution: temurin
       - name: test and build
-        run: ./gradlew test build
+        run: ./gradlew test installDist
         env:
           ORG_GRADLE_PROJECT_githubUser: x-access-token
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
