@@ -39,7 +39,7 @@ suspend fun RoutingCall.validateToken() {
                 ),
             )
         }.body<ValidateTokenResponse>()
-        logger.debug("Validate token response took ${System.currentTimeMillis() - start} ms")
+        logger.debug("Validate token took ${System.currentTimeMillis() - start} ms")
 
         if (validateTokenResponse.active) {
             return
