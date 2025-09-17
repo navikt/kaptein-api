@@ -63,7 +63,6 @@ fun Application.configureRouting() {
         }
 
         get("/internal/isstarted") {
-            log
             if (BehandlingRepository.isReady()) {
                 call.respond(HttpStatusCode.OK)
             } else {

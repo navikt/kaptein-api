@@ -25,6 +25,7 @@ suspend fun RoutingCall.validateToken() {
     if (token == null || token.isEmpty()) {
         logger.warn("Missing or empty Authorization header")
         this.respond(HttpStatusCode.Unauthorized)
+        return
     } else {
         val start = System.currentTimeMillis()
         val tokenEndpoint = System.getenv("NAIS_TOKEN_INTROSPECTION_ENDPOINT")
