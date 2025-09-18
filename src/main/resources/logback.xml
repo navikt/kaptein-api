@@ -10,4 +10,6 @@
 
     <logger name="org.apache.kafka" level="warn"/>
     <logger name="no.nav.klage" level="debug"/>
+    <logger name="Application" level="debug"/>
+
 </configuration>

@@ -30,26 +30,25 @@ val Application.isDevelopmentMode get() = envKind == "true"
 val Application.isProductionMode get() = envKind == "false"
 
 suspend fun Application.module() {
-    log.info("installing modules")
-    log.info("installing content negotiation")
+    log.debug("installing modules")
+    log.debug("installing content negotiation")
     install(ContentNegotiation) {
         jackson {
             registerModule(JavaTimeModule())
             dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
         }
     }
-    log.info("installing compression")
+    log.debug("installing compression")
     install(Compression) {
         gzip()
     }
-    log.info("installing OpenApi")
+    log.debug("installing OpenApi")
     install(OpenApi)
 
-    log.info("configuring routing")
+    log.debug("configuring routing")
     configureRouting()
 
     if (isProductionMode) {
-        log.info("Application is running in production mode.")
         //first start kafka listener to be ready to consume messages as soon as possible
         launch {
             KafkaClient.startKafkaListener()
@@ -73,7 +72,7 @@ suspend fun Application.module() {
         }
     }
 
-    log.info("Application is running in ${if (isDevelopmentMode) "development/local" else "production"} mode")
+    log.debug("Application is running in ${if (isDevelopmentMode) "development/local" else "production"} mode")
 
 //    configureSockets()
 }
