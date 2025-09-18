@@ -55,6 +55,8 @@ object KabalApiService {
             header("Authorization", "Bearer ${acquireTokenResponse.access_token}")
         }
 
+        val ourJacksonObjectMapper = ourJacksonObjectMapper()
+
         try {
             // Check if the response is successful and then stream the body
             if (response.status.isSuccess()) {
@@ -64,13 +66,13 @@ object KabalApiService {
                     val behandlingAsString = channel.readUTF8Line()
                     if (!behandlingAsString.isNullOrBlank()) {
                         BehandlingRepository.addBehandling(
-                            ourJacksonObjectMapper().readValue(
+                            ourJacksonObjectMapper.readValue(
                                 behandlingAsString,
                                 Behandling::class.java
                             )
                         )
                     }
-                    if (++counter % 100 == 0) {
+                    if (++counter % 1000 == 0) {
                         logger.debug("Fetched $counter behandlinger so far...")
                     }
                 }
