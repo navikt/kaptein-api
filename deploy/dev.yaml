@@ -7,9 +7,8 @@ inboundApplications:
 
 springProfile: dev-gcp
 tenant: trygdeetaten.no
-kafka_pool: nav-dev
 
-initialIsStartedDelay: 20
+kafka_pool: nav-dev
 
 replicasMin: 1
 replicasMax: 1

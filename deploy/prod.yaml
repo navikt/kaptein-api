@@ -10,8 +10,6 @@ tenant: nav.no
 
 kafka_pool: nav-prod
 
-initialIsStartedDelay: 60
-
 replicasMin: 2
 replicasMax: 3
 
@@ -43,4 +41,4 @@ adRoles:
 
 envs:
   - name: JAVA_OPTS
-    value: "-Xms512m -Xmx1024m"
+    value: "-Xms256m -Xmx1024m"
