@@ -9,10 +9,11 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import no.nav.klage.domain.BehandlingerActiveResponseView
 import no.nav.klage.domain.BehandlingerFinishedResponseView
+import no.nav.klage.domain.TRBehandlingerActiveResponseView
+import no.nav.klage.domain.TRBehandlingerFinishedResponseView
+import no.nav.klage.kodeverk.Type.*
 import no.nav.klage.repository.BehandlingRepository
-import no.nav.klage.service.getBehandlingListFerdigstilte
-import no.nav.klage.service.getBehandlingListLedige
-import no.nav.klage.service.getBehandlingListTildelte
+import no.nav.klage.service.*
 import no.nav.klage.util.validateToken
 
 fun Application.configureRouting() {
@@ -25,7 +26,7 @@ fun Application.configureRouting() {
             swaggerUI("/api.json")
         }
 
-        get("/behandlinger/ledige", {
+        get("/klager/ledige", {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerActiveResponseView>()
@@ -33,10 +34,10 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getBehandlingListLedige())
+            call.respond(getBehandlingListLedige(KLAGE))
         }
 
-        get("/behandlinger/tildelte", {
+        get("/anker/ledige", {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerActiveResponseView>()
@@ -44,10 +45,98 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getBehandlingListTildelte())
+            call.respond(getBehandlingListLedige(ANKE))
         }
 
-        get("/behandlinger/ferdigstilte", {
+        get("/behandling-etter-tr-opphevet/ledige", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerActiveResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getBehandlingListLedige(BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET))
+        }
+
+        get("/omgjoeringskrav/ledige", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerActiveResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getBehandlingListLedige(OMGJOERINGSKRAV))
+        }
+
+        get("/anke-i-tr/ledige", {
+            response {
+                HttpStatusCode.OK to {
+                    body<TRBehandlingerActiveResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getTRBehandlingListLedige())
+        }
+
+        get("/klager/tildelte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerActiveResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getBehandlingListTildelte(KLAGE))
+        }
+
+        get("/anker/tildelte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerActiveResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getBehandlingListTildelte(ANKE))
+        }
+
+        get("/behandling-etter-tr-opphevet/tildelte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerActiveResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getBehandlingListTildelte(BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET))
+        }
+
+        get("/omgjoeringskrav/tildelte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerActiveResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getBehandlingListTildelte(OMGJOERINGSKRAV))
+        }
+
+        get("/anke-i-tr/tildelte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<TRBehandlingerActiveResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getTRBehandlingListTildelte())
+        }
+
+        get("/klager/ferdigstilte", {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerFinishedResponseView>()
@@ -55,7 +144,51 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getBehandlingListFerdigstilte())
+            call.respond(getBehandlingListFerdigstilte(KLAGE))
+        }
+
+        get("/anker/ferdigstilte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerFinishedResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getBehandlingListFerdigstilte(ANKE))
+        }
+
+        get("/behandling-etter-tr-opphevet/ferdigstilte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerFinishedResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getBehandlingListFerdigstilte(BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET))
+        }
+
+        get("/omgjoeringskrav/ferdigstilte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerFinishedResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getBehandlingListFerdigstilte(OMGJOERINGSKRAV))
+        }
+
+        get("/anke-i-tr/ferdigstilte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<TRBehandlingerFinishedResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getTRBehandlingListFerdigstilte())
         }
 
         get("/internal/health") {

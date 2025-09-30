@@ -1,9 +1,11 @@
 package no.nav.klage.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class Behandling(
     val id: UUID,
     val fraNAVEnhet: String?,
