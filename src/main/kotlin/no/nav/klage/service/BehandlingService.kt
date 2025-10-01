@@ -148,6 +148,7 @@ fun getTRBehandlingListFerdigstilte(): TRBehandlingerFinishedResponseView {
                 registreringshjemmelIdList = it.resultat.hjemmelIdSet.toList(),
             ),
             tilbakekreving = it.tilbakekreving,
+            //TODO
             previousRegistreringshjemmelIdList = emptyList(),
             sendtTilTR = it.sendtTilTrygderetten!!.toLocalDate(),
             mottattFraTR = it.kjennelseMottatt!!.toLocalDate(),
@@ -188,6 +189,7 @@ fun Behandling.toTRActiveView(): TRBehandlingActiveView {
         innsendingshjemmelIdList = this.hjemmelIdList,
         created = this.created,
         tilbakekreving = this.hjemmelIdList.isTilbakekreving(),
+        //TODO
         previousRegistreringshjemmelIdList = emptyList(),
         sendtTilTR = this.sendtTilTrygderetten!!.toLocalDate(),
     )
