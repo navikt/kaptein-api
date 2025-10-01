@@ -48,7 +48,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListLedige(ANKE))
         }
 
-        get("/behandling-etter-tr-opphevet/ledige", {
+        get("/behandlinger-etter-tr-opphevet/ledige", {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerActiveResponseView>()
@@ -70,7 +70,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListLedige(OMGJOERINGSKRAV))
         }
 
-        get("/anke-i-tr/ledige", {
+        get("/anker-i-tr/ledige", {
             response {
                 HttpStatusCode.OK to {
                     body<TRBehandlingerActiveResponseView>()
@@ -103,7 +103,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListTildelte(ANKE))
         }
 
-        get("/behandling-etter-tr-opphevet/tildelte", {
+        get("/behandlinger-etter-tr-opphevet/tildelte", {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerActiveResponseView>()
@@ -125,7 +125,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListTildelte(OMGJOERINGSKRAV))
         }
 
-        get("/anke-i-tr/tildelte", {
+        get("/anker-i-tr/tildelte", {
             response {
                 HttpStatusCode.OK to {
                     body<TRBehandlingerActiveResponseView>()
@@ -158,7 +158,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListFerdigstilte(ANKE))
         }
 
-        get("/behandling-etter-tr-opphevet/ferdigstilte", {
+        get("/behandlinger-etter-tr-opphevet/ferdigstilte", {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerFinishedResponseView>()
@@ -180,7 +180,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListFerdigstilte(OMGJOERINGSKRAV))
         }
 
-        get("/anke-i-tr/ferdigstilte", {
+        get("/anker-i-tr/ferdigstilte", {
             response {
                 HttpStatusCode.OK to {
                     body<TRBehandlingerFinishedResponseView>()
