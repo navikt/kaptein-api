@@ -83,11 +83,7 @@ data class BehandlingActiveView(
     val ageKA: Int,
     val innsendingshjemmelIdList: List<String>,
     val created: LocalDateTime,
-    val sattPaaVent: SattPaaVent?,
+    val sattPaaVentReasonId: String?,
     val varsletFrist: LocalDate?,
     val tilbakekreving: Boolean,
-) {
-    data class SattPaaVent(
-        val reasonId: String,
-    )
-}
+)

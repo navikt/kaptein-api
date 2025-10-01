@@ -171,9 +171,7 @@ fun Behandling.toActiveView(): BehandlingActiveView {
         ageKA = this.ageKA,
         innsendingshjemmelIdList = this.hjemmelIdList,
         created = this.created,
-        sattPaaVent = if (this.sattPaaVent != null) BehandlingActiveView.SattPaaVent(
-            reasonId = this.sattPaaVent.reasonId
-        ) else null,
+        sattPaaVentReasonId = this.sattPaaVent?.reasonId,
         varsletFrist = this.varsletFrist,
         tilbakekreving = this.hjemmelIdList.isTilbakekreving()
     )
