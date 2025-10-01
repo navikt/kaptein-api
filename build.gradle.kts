@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.ktor.serialization.jackson)
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.klage.kodeverk)
     testImplementation(libs.testcontainers)
     testImplementation(libs.testcontainers.kafka)
     testImplementation(libs.testcontainers.junit.jupiter)

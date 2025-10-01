@@ -7,6 +7,7 @@ jackson = "2.15.2"
 logstash = "8.1"
 testcontainers = "1.21.3"
 smiley4 = "5.2.0"
+klageKodeverk = "1.11.8"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
@@ -29,6 +30,7 @@ kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafk
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstash" }
+klage-kodeverk = { module = "no.nav.klage:klage-kodeverk", version.ref = "klageKodeverk" }
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 testcontainers-kafka = { module = "org.testcontainers:kafka", version.ref = "testcontainers" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
