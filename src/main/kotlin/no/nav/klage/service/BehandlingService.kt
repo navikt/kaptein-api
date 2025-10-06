@@ -108,6 +108,7 @@ fun getBehandlingListFerdigstilte(type: Type): BehandlingerFinishedResponseView 
             ageKA = it.ageKA,
             innsendingshjemmelIdList = it.hjemmelIdList,
             created = it.created,
+            mottattKlageinstans = it.mottattKlageinstans,
             resultat = VedtakView(
                 utfallId = it.resultat?.utfallId!!,
                 registreringshjemmelIdList = it.resultat.hjemmelIdSet.toList(),
@@ -143,6 +144,7 @@ fun getTRBehandlingListFerdigstilte(): TRBehandlingerFinishedResponseView {
             ageKA = it.ageKA,
             innsendingshjemmelIdList = it.hjemmelIdList,
             created = it.created,
+            mottattKlageinstans = it.mottattKlageinstans,
             resultat = VedtakView(
                 utfallId = it.resultat?.utfallId!!,
                 registreringshjemmelIdList = it.resultat.hjemmelIdSet.toList(),
@@ -172,6 +174,7 @@ fun Behandling.toActiveView(): BehandlingActiveView {
         ageKA = this.ageKA,
         innsendingshjemmelIdList = this.hjemmelIdList,
         created = this.created,
+        mottattKlageinstans = this.mottattKlageinstans,
         sattPaaVentReasonId = this.sattPaaVent?.reasonId,
         varsletFrist = this.varsletFrist,
         tilbakekreving = this.hjemmelIdList.isTilbakekreving()
@@ -188,6 +191,7 @@ fun Behandling.toTRActiveView(): TRBehandlingActiveView {
         ageKA = this.ageKA,
         innsendingshjemmelIdList = this.hjemmelIdList,
         created = this.created,
+        mottattKlageinstans = this.mottattKlageinstans,
         tilbakekreving = this.hjemmelIdList.isTilbakekreving(),
         //TODO
         previousRegistreringshjemmelIdList = emptyList(),
