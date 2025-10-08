@@ -111,6 +111,8 @@ private fun addMockBehandlinger() {
                 fagsystemId = "123456789",
                 varsletFrist = null,
                 tilbakekreving = false,
+                previousTildeltEnhet = null,
+                previousRegistreringshjemmelIdList = null,
             )
         )
     }

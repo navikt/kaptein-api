@@ -45,6 +45,8 @@ object MockKafkaClient {
                     fagsystemId = "123456789",
                     varsletFrist = null,
                     tilbakekreving = false,
+                    previousTildeltEnhet = null,
+                    previousRegistreringshjemmelIdList = null,
                 )
                 BehandlingRepository.addBehandling(newBehandling)
                 logger.debug("Received new behandling from \"Kafka\": {}", newBehandling)
