@@ -140,7 +140,7 @@ fun getTRBehandlingListFerdigstilte(): TRBehandlingerFinishedResponseView {
             ytelseId = it.ytelseId,
             typeId = it.typeId,
             avsluttetAvSaksbehandlerDate = it.avsluttetAvSaksbehandlerDate!!,
-            tildeltEnhet = it.tildeltEnhet!!,
+            tildeltEnhet = it.previousTildeltEnhet ?: it.tildeltEnhet!!,
             ageKA = it.ageKA,
             innsendingshjemmelIdList = it.hjemmelIdList,
             created = it.created,
@@ -150,8 +150,7 @@ fun getTRBehandlingListFerdigstilte(): TRBehandlingerFinishedResponseView {
                 registreringshjemmelIdList = it.resultat.hjemmelIdSet.toList(),
             ),
             tilbakekreving = it.tilbakekreving,
-            //TODO
-            previousRegistreringshjemmelIdList = emptyList(),
+            previousRegistreringshjemmelIdList = it.previousRegistreringshjemmelIdList,
             sendtTilTR = it.sendtTilTrygderetten!!.toLocalDate(),
             mottattFraTR = it.kjennelseMottatt!!.toLocalDate(),
         )
@@ -187,14 +186,13 @@ fun Behandling.toTRActiveView(): TRBehandlingActiveView {
         ytelseId = this.ytelseId,
         typeId = this.typeId,
         isTildelt = this.isTildelt,
-        tildeltEnhet = this.tildeltEnhet!!,
+        tildeltEnhet = this.previousTildeltEnhet ?: this.tildeltEnhet,
         ageKA = this.ageKA,
         innsendingshjemmelIdList = this.hjemmelIdList,
         created = this.created,
         mottattKlageinstans = this.mottattKlageinstans,
         tilbakekreving = this.hjemmelIdList.isTilbakekreving(),
-        //TODO
-        previousRegistreringshjemmelIdList = emptyList(),
+        previousRegistreringshjemmelIdList = this.previousRegistreringshjemmelIdList,
         sendtTilTR = this.sendtTilTrygderetten!!.toLocalDate(),
     )
 }
