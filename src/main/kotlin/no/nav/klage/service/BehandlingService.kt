@@ -145,14 +145,16 @@ fun getTRBehandlingListFerdigstilte(): TRBehandlingerFinishedResponseView {
             innsendingshjemmelIdList = it.hjemmelIdList,
             created = it.created,
             mottattKlageinstans = it.mottattKlageinstans,
-            resultat = VedtakView(
-                utfallId = it.resultat?.utfallId!!,
-                registreringshjemmelIdList = it.resultat.hjemmelIdSet.toList(),
-            ),
+            resultat = if (it.resultat?.utfallId != null && it.kjennelseMottatt != null) {
+                VedtakView(
+                    utfallId = it.resultat.utfallId,
+                    registreringshjemmelIdList = it.resultat.hjemmelIdSet.toList(),
+                )
+            } else null,
             tilbakekreving = it.tilbakekreving,
             previousRegistreringshjemmelIdList = it.previousRegistreringshjemmelIdList,
             sendtTilTR = it.sendtTilTrygderetten!!.toLocalDate(),
-            mottattFraTR = it.kjennelseMottatt!!.toLocalDate(),
+            mottattFraTR = it.kjennelseMottatt?.toLocalDate(),
         )
     }
     logger.debug("Fetched ${behandlingViewList.size} finished behandlinger with type ${ANKE_I_TRYGDERETTEN.id} in ${System.currentTimeMillis() - start} ms")

@@ -55,10 +55,10 @@ data class TRBehandlingFinishedView(
     val previousRegistreringshjemmelIdList: List<String>?,
     val created: LocalDateTime,
     val mottattKlageinstans: LocalDate,
-    val resultat: VedtakView,
+    val resultat: VedtakView?,
     val tilbakekreving: Boolean,
     val sendtTilTR: LocalDate,
-    val mottattFraTR: LocalDate,
+    val mottattFraTR: LocalDate?,
 )
 
 data class TRBehandlingActiveView(
