@@ -2,6 +2,7 @@ package no.nav.klage
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.github.smiley4.ktoropenapi.OpenApi
+import io.github.smiley4.ktoropenapi.config.SchemaGenerator
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
@@ -42,8 +43,16 @@ suspend fun Application.module() {
     install(Compression) {
         gzip()
     }
+
     log.debug("installing OpenApi")
-    install(OpenApi)
+    install(OpenApi) {
+        schemas {
+            generator = SchemaGenerator.reflection {
+                overwrite(SchemaGenerator.TypeOverwrites.LocalDateTime())
+                overwrite(SchemaGenerator.TypeOverwrites.LocalDate())
+            }
+        }
+    }
 
     log.debug("configuring routing")
     configureRouting()

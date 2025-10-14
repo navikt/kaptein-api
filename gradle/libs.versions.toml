@@ -6,7 +6,8 @@ kafka = "3.8.1"
 jackson = "2.15.2"
 logstash = "8.1"
 testcontainers = "1.21.3"
-smiley4 = "5.2.0"
+smiley4 = "5.3.0"
+kenerator = "2.4.0"
 klageKodeverk = "1.11.8"
 
 [libraries]
@@ -18,6 +19,9 @@ ktor-serialization-jackson = { module = "io.ktor:ktor-serialization-jackson", ve
 ktor-server-compression = { module = "io.ktor:ktor-server-compression", version.ref = "ktor" }
 smiley4-openapi-generator = { module = "io.github.smiley4:ktor-openapi", version.ref = "smiley4" }
 smiley4-swagger-ui = { module = "io.github.smiley4:ktor-swagger-ui", version.ref = "smiley4" }
+smiley4-schema-kenerator-core = { module = "io.github.smiley4:schema-kenerator-core", version.ref = "kenerator" }
+smiley4-schema-kenerator-reflection = { module = "io.github.smiley4:schema-kenerator-reflection", version.ref = "kenerator" }
+smiley4-schema-kenerator-swagger = { module = "io.github.smiley4:schema-kenerator-swagger", version.ref = "kenerator" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
 ktor-server-openapi = { module = "io.ktor:ktor-server-openapi", version.ref = "ktor" }
