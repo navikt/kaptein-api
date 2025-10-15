@@ -2,9 +2,11 @@ package no.nav.klage.service
 
 import io.ktor.util.logging.*
 import no.nav.klage.domain.*
+import no.nav.klage.domain.Behandling.InitiatingSystem.KABAL
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.Type.ANKE_I_TRYGDERETTEN
+import no.nav.klage.kodeverk.Type.*
 import no.nav.klage.repository.BehandlingRepository
+import java.time.temporal.ChronoUnit
 
 private val logger = KtorSimpleLogger("no.nav.klage.service.BehandlingService")
 
@@ -114,15 +116,33 @@ fun getBehandlingListFerdigstilte(type: Type): BehandlingerFinishedResponseView 
                 registreringshjemmelIdList = it.resultat.hjemmelIdSet.toList(),
             ),
             varsletFrist = it.varsletFrist,
-            tilbakekreving = it.tilbakekreving
+            tilbakekreving = it.tilbakekreving,
+            behandlingstid = it.getBehandlingstid(),
         )
-
     }
     logger.debug("Fetched ${behandlingViewList.size} finished behandlinger with type $type in ${System.currentTimeMillis() - start} ms")
     return BehandlingerFinishedResponseView(
         behandlinger = behandlingViewList,
         total = behandlingViewList.size,
     )
+}
+
+private fun Behandling.getBehandlingstid(): Int {
+    if (this.avsluttetAvSaksbehandlerDate == null) error("Behandling is not finished")
+    val type = Type.of(this.typeId)
+    return when (type) {
+        KLAGE, OMGJOERINGSKRAV, BEGJAERING_OM_GJENOPPTAK, BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET -> {
+            ChronoUnit.DAYS.between(this.mottattKlageinstans, this.avsluttetAvSaksbehandlerDate).toInt()
+        }
+        ANKE_I_TRYGDERETTEN, BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN -> {
+            val endDate = this.kjennelseMottatt?.toLocalDate() ?: this.avsluttetAvSaksbehandlerDate
+            ChronoUnit.DAYS.between(this.sendtTilTrygderetten!!.toLocalDate(), endDate).toInt()
+        }
+        ANKE -> {
+            val startDate = if (this.initiatingSystem == KABAL) this.created.toLocalDate() else this.mottattKlageinstans
+            ChronoUnit.DAYS.between(startDate, this.avsluttetAvSaksbehandlerDate).toInt()
+        }
+    }
 }
 
 fun getTRBehandlingListFerdigstilte(): TRBehandlingerFinishedResponseView {
@@ -155,6 +175,7 @@ fun getTRBehandlingListFerdigstilte(): TRBehandlingerFinishedResponseView {
             previousRegistreringshjemmelIdList = it.previousRegistreringshjemmelIdList,
             sendtTilTR = it.sendtTilTrygderetten!!.toLocalDate(),
             mottattFraTR = it.kjennelseMottatt?.toLocalDate(),
+            behandlingstid = it.getBehandlingstid(),
         )
     }
     logger.debug("Fetched ${behandlingViewList.size} finished behandlinger with type ${ANKE_I_TRYGDERETTEN.id} in ${System.currentTimeMillis() - start} ms")

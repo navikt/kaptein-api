@@ -34,7 +34,13 @@ data class Behandling(
     val tilbakekreving: Boolean,
     val previousTildeltEnhet: String?,
     val previousRegistreringshjemmelIdList: List<String>?,
-) {
+    val initiatingSystem: InitiatingSystem,
+
+    ) {
+    enum class InitiatingSystem {
+        FAGSYSTEM, KABIN, KABAL
+    }
+
     data class VedtakView(
         val id: UUID,
         val utfallId: String?,
