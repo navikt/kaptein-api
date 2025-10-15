@@ -42,6 +42,7 @@ data class BehandlingFinishedView(
     val resultat: VedtakView,
     val varsletFrist: LocalDate?,
     val tilbakekreving: Boolean,
+    val behandlingstid: Int,
 )
 
 data class TRBehandlingFinishedView(
@@ -59,6 +60,7 @@ data class TRBehandlingFinishedView(
     val tilbakekreving: Boolean,
     val sendtTilTR: LocalDate,
     val mottattFraTR: LocalDate?,
+    val behandlingstid: Int,
 )
 
 data class TRBehandlingActiveView(

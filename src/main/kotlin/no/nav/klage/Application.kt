@@ -122,6 +122,7 @@ private fun addMockBehandlinger() {
                 tilbakekreving = false,
                 previousTildeltEnhet = null,
                 previousRegistreringshjemmelIdList = null,
+                initiatingSystem = Behandling.InitiatingSystem.KABIN,
             )
         )
     }
