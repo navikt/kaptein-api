@@ -1,14 +1,14 @@
 [versions]
-kotlin = "2.2.20"
-ktor = "3.3.0"
-logback = "1.5.18"
-kafka = "3.8.1"
-jackson = "2.15.2"
-logstash = "8.1"
+kotlin = "2.2.21"
+ktor = "3.3.1"
+logback = "1.5.20"
+kafka = "4.1.0"
+jackson = "2.20.1"
+logstash = "9.0"
 testcontainers = "1.21.3"
 smiley4 = "5.3.0"
 kenerator = "2.4.0"
-klageKodeverk = "1.11.13"
+klageKodeverk = "1.12.5"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
