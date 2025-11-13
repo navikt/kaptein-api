@@ -11,6 +11,7 @@ import no.nav.klage.domain.BehandlingerActiveResponseView
 import no.nav.klage.domain.BehandlingerFinishedResponseView
 import no.nav.klage.domain.TRBehandlingerActiveResponseView
 import no.nav.klage.domain.TRBehandlingerFinishedResponseView
+import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Type.*
 import no.nav.klage.repository.BehandlingRepository
 import no.nav.klage.service.*
@@ -78,7 +79,29 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getTRBehandlingListLedige())
+            call.respond(getTRBehandlingListLedige(type = ANKE_I_TRYGDERETTEN))
+        }
+
+        get("/begjaeringer-om-gjenopptak/ledige", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerActiveResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getBehandlingListLedige(type = BEGJAERING_OM_GJENOPPTAK))
+        }
+
+        get("/begjaeringer-om-gjenopptak-i-tr/ledige", {
+            response {
+                HttpStatusCode.OK to {
+                    body<TRBehandlingerActiveResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getTRBehandlingListLedige(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN))
         }
 
         get("/klager/tildelte", {
@@ -133,7 +156,29 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getTRBehandlingListTildelte())
+            call.respond(getTRBehandlingListTildelte(type = ANKE_I_TRYGDERETTEN))
+        }
+
+        get("/begjaeringer-om-gjenopptak/tildelte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerActiveResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getBehandlingListTildelte(type = BEGJAERING_OM_GJENOPPTAK))
+        }
+
+        get("/begjaeringer-om-gjenopptak-i-tr/tildelte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<TRBehandlingerActiveResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getTRBehandlingListTildelte(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN))
         }
 
         get("/klager/ferdigstilte", {
@@ -188,7 +233,29 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getTRBehandlingListFerdigstilte())
+            call.respond(getTRBehandlingListFerdigstilte(type = ANKE_I_TRYGDERETTEN))
+        }
+
+        get("/begjaeringer-om-gjenopptak/ferdigstilte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<BehandlingerFinishedResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getBehandlingListFerdigstilte(type = BEGJAERING_OM_GJENOPPTAK))
+        }
+
+        get("/begjaeringer-om-gjenopptak-i-tr/ferdigstilte", {
+            response {
+                HttpStatusCode.OK to {
+                    body<TRBehandlingerFinishedResponseView>()
+                }
+            }
+        }) {
+            call.validateToken()
+            call.respond(getTRBehandlingListFerdigstilte(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN))
         }
 
         get("/internal/health") {
