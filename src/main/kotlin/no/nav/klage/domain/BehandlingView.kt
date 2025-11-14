@@ -74,6 +74,7 @@ data class TRBehandlingActiveView(
     val previousRegistreringshjemmelIdList: List<String>?,
     val created: LocalDateTime,
     val mottattKlageinstans: LocalDate,
+    val sattPaaVentReasonId: String?,
     val tilbakekreving: Boolean,
     val sendtTilTR: LocalDate,
 )

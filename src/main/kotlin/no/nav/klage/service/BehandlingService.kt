@@ -30,7 +30,7 @@ fun getBehandlingListLedige(type: Type): BehandlingerActiveResponseView {
     )
 }
 
-fun getTRBehandlingListLedige(): TRBehandlingerActiveResponseView {
+fun getTRBehandlingListLedige(type: Type): TRBehandlingerActiveResponseView {
     logger.debug("getTRBehandlingListLedige")
     val start = System.currentTimeMillis()
     val behandlingList = BehandlingRepository.getBehandlingListCopyForReadOnly()
@@ -39,10 +39,10 @@ fun getTRBehandlingListLedige(): TRBehandlingerActiveResponseView {
         behandling.feilregistrering == null &&
                 !behandling.isAvsluttetAvSaksbehandler &&
                 !behandling.isTildelt &&
-                behandling.typeId == ANKE_I_TRYGDERETTEN.id
+                behandling.typeId == type.id
     }.map { it.toTRActiveView() }
 
-    logger.debug("Fetched ${behandlingViewList.size} ledige behandlinger with type ${ANKE_I_TRYGDERETTEN.id} in ${System.currentTimeMillis() - start} ms")
+    logger.debug("Fetched ${behandlingViewList.size} ledige behandlinger with type ${type.id} in ${System.currentTimeMillis() - start} ms")
 
     return TRBehandlingerActiveResponseView(
         behandlinger = behandlingViewList,
@@ -70,7 +70,7 @@ fun getBehandlingListTildelte(type: Type): BehandlingerActiveResponseView {
     )
 }
 
-fun getTRBehandlingListTildelte(): TRBehandlingerActiveResponseView {
+fun getTRBehandlingListTildelte(type: Type): TRBehandlingerActiveResponseView {
     logger.debug("getTRBehandlingListTildelte")
     val start = System.currentTimeMillis()
     val behandlingList = BehandlingRepository.getBehandlingListCopyForReadOnly()
@@ -79,10 +79,10 @@ fun getTRBehandlingListTildelte(): TRBehandlingerActiveResponseView {
         behandling.feilregistrering == null &&
                 !behandling.isAvsluttetAvSaksbehandler &&
                 behandling.isTildelt &&
-                behandling.typeId == ANKE_I_TRYGDERETTEN.id
+                behandling.typeId == type.id
     }.map { it.toTRActiveView() }
 
-    logger.debug("Fetched ${behandlingViewList.size} tildelte behandlinger with type ${ANKE_I_TRYGDERETTEN.id} in ${System.currentTimeMillis() - start} ms")
+    logger.debug("Fetched ${behandlingViewList.size} tildelte behandlinger with type ${type.id} in ${System.currentTimeMillis() - start} ms")
 
     return TRBehandlingerActiveResponseView(
         behandlinger = behandlingViewList,
@@ -145,7 +145,7 @@ private fun Behandling.getBehandlingstid(): Int {
     }
 }
 
-fun getTRBehandlingListFerdigstilte(): TRBehandlingerFinishedResponseView {
+fun getTRBehandlingListFerdigstilte(type: Type): TRBehandlingerFinishedResponseView {
     logger.debug("getTRBehandlingListFerdigstilte")
     val start = System.currentTimeMillis()
     val behandlingList = BehandlingRepository.getBehandlingListCopyForReadOnly()
@@ -153,7 +153,7 @@ fun getTRBehandlingListFerdigstilte(): TRBehandlingerFinishedResponseView {
     val behandlingViewList = behandlingList.filter { behandling ->
         behandling.feilregistrering == null &&
                 behandling.isAvsluttetAvSaksbehandler &&
-                behandling.typeId == ANKE_I_TRYGDERETTEN.id
+                behandling.typeId == type.id
     }.map {
         TRBehandlingFinishedView(
             id = it.id.toString(),
@@ -178,7 +178,7 @@ fun getTRBehandlingListFerdigstilte(): TRBehandlingerFinishedResponseView {
             behandlingstid = it.getBehandlingstid(),
         )
     }
-    logger.debug("Fetched ${behandlingViewList.size} finished behandlinger with type ${ANKE_I_TRYGDERETTEN.id} in ${System.currentTimeMillis() - start} ms")
+    logger.debug("Fetched ${behandlingViewList.size} finished behandlinger with type ${type.id} in ${System.currentTimeMillis() - start} ms")
     return TRBehandlingerFinishedResponseView(
         behandlinger = behandlingViewList,
         total = behandlingViewList.size,
@@ -214,6 +214,7 @@ fun Behandling.toTRActiveView(): TRBehandlingActiveView {
         innsendingshjemmelIdList = this.hjemmelIdList,
         created = this.created,
         mottattKlageinstans = this.mottattKlageinstans,
+        sattPaaVentReasonId = this.sattPaaVent?.reasonId,
         tilbakekreving = this.hjemmelIdList.isTilbakekreving(),
         previousRegistreringshjemmelIdList = this.previousRegistreringshjemmelIdList,
         sendtTilTR = this.sendtTilTrygderetten!!.toLocalDate(),
