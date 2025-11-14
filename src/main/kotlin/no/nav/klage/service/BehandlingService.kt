@@ -214,6 +214,7 @@ fun Behandling.toTRActiveView(): TRBehandlingActiveView {
         innsendingshjemmelIdList = this.hjemmelIdList,
         created = this.created,
         mottattKlageinstans = this.mottattKlageinstans,
+        sattPaaVentReasonId = this.sattPaaVent?.reasonId,
         tilbakekreving = this.hjemmelIdList.isTilbakekreving(),
         previousRegistreringshjemmelIdList = this.previousRegistreringshjemmelIdList,
         sendtTilTR = this.sendtTilTrygderetten!!.toLocalDate(),
