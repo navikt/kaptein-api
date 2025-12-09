@@ -34,13 +34,17 @@ object KafkaClient {
             while (true) {
                 val records = consumer.poll(Duration.ofSeconds(10))
                 for (record in records) {
-                    logger.debug("Received message: key=${record.key()}, offset=${record.offset()}")
-                    BehandlingRepository.addBehandling(
-                        ourJacksonObjectMapper().readValue(
-                            record.value(),
-                            Behandling::class.java
+                    try {
+                        logger.debug("Received message: key=${record.key()}, offset=${record.offset()}")
+                        BehandlingRepository.addBehandling(
+                            ourJacksonObjectMapper().readValue(
+                                record.value(),
+                                Behandling::class.java
+                            )
                         )
-                    )
+                    } catch (e: Exception) {
+                        logger.error("Error processing message (so not committing) with key=${record.key()} at offset=${record.offset()}: ${e.message}", e)
+                    }
                 }
                 consumer.commitSync()
             }
@@ -50,6 +54,7 @@ object KafkaClient {
     private fun consumerConfig() = mapOf(
         BOOTSTRAP_SERVERS_CONFIG to System.getenv("KAFKA_BROKERS"),
         AUTO_OFFSET_RESET_CONFIG to "latest",
+        ENABLE_AUTO_COMMIT_CONFIG to false,
         KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
         VALUE_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
         GROUP_ID_CONFIG to "kaptein-api-consumer_" + UUID.randomUUID().toString(),
