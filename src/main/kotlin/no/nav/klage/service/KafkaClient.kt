@@ -44,6 +44,7 @@ object KafkaClient {
                         )
                     } catch (e: Exception) {
                         logger.error("Error processing message (so not committing) with key=${record.key()} at offset=${record.offset()}: ${e.message}", e)
+                        throw e
                     }
                 }
                 consumer.commitSync()
