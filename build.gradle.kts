@@ -48,3 +48,7 @@ tasks.withType<Test> {
         events("passed", "skipped", "failed")
     }
 }
+
+tasks.build {
+    dependsOn(tasks.installDist)
+}

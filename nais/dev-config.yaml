@@ -5,7 +5,6 @@ externalHosts:
 inboundApplications:
   - application: kaptein
 
-springProfile: dev-gcp
 tenant: trygdeetaten.no
 
 kafka_pool: nav-dev
