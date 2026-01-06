@@ -8,7 +8,7 @@ logstash = "8.1"
 testcontainers = "1.21.3"
 smiley4 = "5.4.0"
 kenerator = "2.5.0"
-klageKodeverk = "1.12.16"
+klageKodeverk = "1.12.17"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
