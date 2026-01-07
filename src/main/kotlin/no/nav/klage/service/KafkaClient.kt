@@ -23,7 +23,6 @@ object KafkaClient {
 
     fun startKafkaListener() {
         readFromTopic("klage.kaptein-behandling.v1")
-        logger.debug("Kafka listener started")
     }
 
     fun stopKafkaListener() {
