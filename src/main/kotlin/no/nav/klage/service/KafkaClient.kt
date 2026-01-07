@@ -1,8 +1,6 @@
 package no.nav.klage.service
 
 import io.ktor.util.logging.*
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import no.nav.klage.domain.Behandling
 import no.nav.klage.oppgave.util.ourJacksonObjectMapper
 import no.nav.klage.repository.BehandlingRepository
@@ -11,28 +9,36 @@ import org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG
 import org.apache.kafka.clients.consumer.ConsumerConfig.*
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.config.SslConfigs
+import org.apache.kafka.common.errors.WakeupException
 import org.apache.kafka.common.serialization.StringDeserializer
 import java.time.Duration
 import java.util.*
+import java.util.concurrent.atomic.AtomicBoolean
 
 object KafkaClient {
 
     private val logger = KtorSimpleLogger(KafkaClient::class.java.name)
+    private val isRunning = AtomicBoolean(true)
+    private var consumer: KafkaConsumer<String, String>? = null
 
-    suspend fun startKafkaListener() {
-        coroutineScope {
-            launch { readFromTopic("klage.kaptein-behandling.v1") }
-        }
+    fun startKafkaListener() {
+        readFromTopic("klage.kaptein-behandling.v1")
         logger.debug("Kafka listener started")
     }
 
-    suspend fun readFromTopic(topic: String) {
+    fun stopKafkaListener() {
+        logger.debug("Stopping Kafka listener...")
+        isRunning.set(false)
+        consumer?.wakeup()
+    }
+
+    fun readFromTopic(topic: String) {
         logger.debug("Starting Kafka listener for topic $topic")
-        val consumer = KafkaConsumer<String, String>(consumerConfig())
-        coroutineScope {
-            consumer.subscribe(listOf(topic))
-            while (true) {
-                val records = consumer.poll(Duration.ofSeconds(10))
+        consumer = KafkaConsumer(consumerConfig())
+        try {
+            consumer!!.subscribe(listOf(topic))
+            while (isRunning.get()) {
+                val records = consumer!!.poll(Duration.ofSeconds(1))
                 for (record in records) {
                     try {
                         logger.debug("Received message: key=${record.key()}, offset=${record.offset()}")
@@ -47,8 +53,17 @@ object KafkaClient {
                         throw e
                     }
                 }
-                consumer.commitSync()
+                consumer!!.commitSync()
             }
+        } catch (e: WakeupException) {
+            if (isRunning.get()) {
+                throw e
+            }
+            logger.debug("Kafka consumer wakeup received during shutdown")
+        } finally {
+            logger.debug("Closing Kafka consumer...")
+            consumer?.close()
+            logger.debug("Kafka consumer closed")
         }
     }
 
