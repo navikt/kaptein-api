@@ -19,7 +19,7 @@ object KafkaClient {
 
     private val logger = KtorSimpleLogger(KafkaClient::class.java.name)
     private val isRunning = AtomicBoolean(true)
-    private var consumer: KafkaConsumer<String, String>? = null
+    @Volatile private var consumer: KafkaConsumer<String, String>? = null
 
     fun startKafkaListener() {
         readFromTopic("klage.kaptein-behandling.v1")
