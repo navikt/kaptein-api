@@ -30,7 +30,7 @@ val Application.envKind get() = environment.config.property("ktor.development").
 val Application.isDevelopmentMode get() = envKind == "true"
 val Application.isProductionMode get() = envKind == "false"
 
-suspend fun Application.module() {
+fun Application.module() {
     log.debug("installing modules")
     log.debug("installing content negotiation")
     install(ContentNegotiation) {
@@ -61,6 +61,12 @@ suspend fun Application.module() {
         //first start kafka listener to be ready to consume messages as soon as possible
         launch {
             KafkaClient.startKafkaListener()
+        }
+
+        // Register shutdown hook to stop Kafka listener gracefully
+        monitor.subscribe(ApplicationStopping) {
+            log.debug("Application stopping, shutting down Kafka listener...")
+            KafkaClient.stopKafkaListener()
         }
 
         //then fetch existing behandlinger from kabal api
