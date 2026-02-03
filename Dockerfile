@@ -1,4 +1,4 @@
-FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/jre:openjdk-21@sha256:62cbd08eb3e57da61f1d6f39d8358035b9eaf90cb65d93d522ed0248a4d8e6a7
+FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/jre:openjdk-21@sha256:c0d5195f881c9d1464a9581935670d391066c5cbba2d166ae3059c4c20bb623c
 COPY build/install/*/lib /lib
 COPY src/main/resources/logback.xml /app/logback.xml
 ENV TZ="Europe/Oslo"
