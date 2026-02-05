@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 ktor = "3.4.0"
 logback = "1.5.27"
 kafka = "4.1.1"
@@ -8,7 +8,7 @@ logstash = "9.0"
 testcontainers = "1.21.4"
 smiley4 = "5.4.0"
 kenerator = "2.6.0"
-klageKodeverk = "3.0.1"
+klageKodeverk = "3.0.2"
 junit = "6.0.2"
 
 [libraries]
