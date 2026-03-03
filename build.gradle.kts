@@ -28,7 +28,11 @@ dependencies {
     implementation(libs.kafka.clients)
     implementation(libs.jackson.module.kotlin)
     implementation(libs.jackson.datatype.jsr310)
-    implementation(libs.logstash.logback.encoder)
+    implementation(libs.logstash.logback.encoder) {
+        exclude(group = "tools.jackson.core")
+        exclude(group = "tools.jackson")
+    }
+    implementation("tools.jackson.core:jackson-databind:3.1.0") // CVE GHSA-72hv-8253-57qq
     implementation(libs.ktor.serialization.jackson)
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.client.content.negotiation)
