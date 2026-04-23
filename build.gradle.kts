@@ -32,7 +32,7 @@ dependencies {
         exclude(group = "tools.jackson.core")
         exclude(group = "tools.jackson")
     }
-    implementation("tools.jackson.core:jackson-databind:3.1.1") // CVE GHSA-72hv-8253-57qq
+    implementation("tools.jackson.core:jackson-databind:3.1.2") // CVE GHSA-72hv-8253-57qq
     implementation(libs.ktor.serialization.jackson)
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.client.content.negotiation)
