@@ -1,14 +1,14 @@
 [versions]
-kotlin = "2.3.20"
-ktor = "3.4.2"
+kotlin = "2.3.21"
+ktor = "3.4.3"
 logback = "1.5.32"
 kafka = "4.2.0"
 jackson = "2.21.2"
 logstash = "9.0"
 testcontainers = "1.21.4"
-smiley4 = "5.6.0"
-kenerator = "2.6.0"
-klageKodeverk = "3.2.6"
+smiley4 = "5.7.0"
+kenerator = "2.7.2"
+klageKodeverk = "3.2.11"
 junit = "6.0.3"
 
 [libraries]
