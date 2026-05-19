@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.3.21"
-ktor = "3.4.3"
+ktor = "3.5.0"
 logback = "1.5.32"
 kafka = "4.2.0"
 jackson = "2.21.3"
@@ -8,8 +8,8 @@ logstash = "9.0"
 testcontainers = "1.21.4"
 smiley4 = "5.7.0"
 kenerator = "2.7.2"
-klageKodeverk = "3.2.13"
-junit = "6.0.3"
+klageKodeverk = "3.2.14"
+junit = "6.1.0"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
