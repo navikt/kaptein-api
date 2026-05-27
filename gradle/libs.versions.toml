@@ -8,7 +8,7 @@ logstash = "9.0"
 testcontainers = "1.21.4"
 smiley4 = "5.7.0"
 kenerator = "2.7.2"
-klageKodeverk = "3.2.14"
+klageKodeverk = "3.2.16"
 junit = "6.1.0"
 
 [libraries]
