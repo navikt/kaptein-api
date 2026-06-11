@@ -30,7 +30,7 @@ spec:
   port: 8080
   startup:
     failureThreshold: 30
-    initialDelay: 220
+    initialDelay: 480
     path: /internal/isstarted
     periodSeconds: 5
     timeout: 3
