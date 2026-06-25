@@ -12,4 +12,13 @@
     <logger name="no.nav.klage" level="debug"/>
     <logger name="Application" level="debug"/>
 
+    <!--
+        Our JSON responses are serialized by Jackson ContentNegotiation as a streaming
+        WriteChannelContent. The Compression plugin then logs a WARN for every such response
+        ("Compressing a WriteChannelContent response ..."). For our bounded JSON list endpoints
+        buffering-then-gzip is exactly the desired behaviour, so this warning is noise. Raise the
+        level for this logger to ERROR to suppress it while keeping gzip enabled.
+    -->
+    <logger name="io.ktor.server.plugins.compression.Compression" level="error"/>
+
 </configuration>
