@@ -11,7 +11,6 @@ import no.nav.klage.domain.BehandlingerActiveResponseView
 import no.nav.klage.domain.BehandlingerFinishedResponseView
 import no.nav.klage.domain.TRBehandlingerActiveResponseView
 import no.nav.klage.domain.TRBehandlingerFinishedResponseView
-import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Type.*
 import no.nav.klage.repository.BehandlingRepository
 import no.nav.klage.service.*
@@ -259,7 +258,14 @@ fun Application.configureRouting() {
         }
 
         get("/internal/health") {
-            call.respondText("OK")
+            // Liveness + readiness both point here. Fail it when the Kafka consumer is no longer
+            // polling: a stuck/dead consumer means this pod serves stale data and has drifted, so
+            // we want it pulled from the load balancer and restarted to re-bootstrap.
+            if (KafkaClient.isConsumerHealthy()) {
+                call.respondText("OK")
+            } else {
+                call.respond(HttpStatusCode.ServiceUnavailable, "Kafka consumer unhealthy")
+            }
         }
 
         get("/internal/isstarted") {
@@ -268,6 +274,20 @@ fun Application.configureRouting() {
             } else {
                 call.respond(HttpStatusCode.ServiceUnavailable)
             }
+        }
+
+        // Diagnostics for cross-instance drift. Call this directly on each pod IP
+        // (bypassing the Service load balancer) and compare 'fingerprint' and 'kafka'.
+        // Same count+checksum => instances are in sync. consumerAlive=false or a large
+        // secondsSinceLastPoll/lastError on one pod explains divergence.
+        get("/internal/diagnostics") {
+            call.respond(
+                mapOf(
+                    "ready" to BehandlingRepository.isReady(),
+                    "fingerprint" to BehandlingRepository.getStateFingerprint(),
+                    "kafka" to KafkaClient.getDiagnostics(),
+                )
+            )
         }
     }
 }

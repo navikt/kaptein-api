@@ -63,7 +63,7 @@ object KabalApiService {
                 logger.debug("Response status is successful: {}", response.status)
                 val channel = response.bodyAsChannel()
                 while (!channel.isClosedForRead) {
-                    val behandlingAsString = channel.readUTF8Line()
+                    val behandlingAsString = channel.readLine()
                     if (!behandlingAsString.isNullOrBlank()) {
                         BehandlingRepository.addBehandling(
                             ourJacksonObjectMapper.readValue(

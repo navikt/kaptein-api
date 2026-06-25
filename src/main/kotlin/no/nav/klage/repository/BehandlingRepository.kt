@@ -25,6 +25,36 @@ object BehandlingRepository {
         }
     }
 
+    /**
+     * Diagnostics helper: a cheap, order-independent fingerprint of the current state.
+     * Two instances that hold identical data (same ids at the same 'modified' versions)
+     * will produce the same count and checksum. Compare across pods to detect drift.
+     */
+    fun getStateFingerprint(): StateFingerprint {
+        return lock.read {
+            // order-independent: XOR per-entry hashes so insertion order does not matter
+            var checksum = 0L
+            var newestModified: java.time.LocalDateTime? = null
+            for (b in behandlingSet.values) {
+                checksum = checksum xor (b.id.hashCode().toLong() * 31 + b.modified.hashCode())
+                if (newestModified == null || b.modified.isAfter(newestModified)) {
+                    newestModified = b.modified
+                }
+            }
+            StateFingerprint(
+                count = behandlingSet.size,
+                checksum = checksum,
+                newestModified = newestModified?.toString(),
+            )
+        }
+    }
+
+    data class StateFingerprint(
+        val count: Int,
+        val checksum: Long,
+        val newestModified: String?,
+    )
+
     fun addBehandling(incomingBehandling: Behandling) {
         // write lock ensures exclusive access for mutations
         lock.write {
