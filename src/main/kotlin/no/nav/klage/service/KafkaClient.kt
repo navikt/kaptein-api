@@ -1,25 +1,29 @@
 package no.nav.klage.service
 
-import io.ktor.util.logging.*
+import io.ktor.util.logging.KtorSimpleLogger
 import no.nav.klage.domain.Behandling
 import no.nav.klage.oppgave.util.ourJacksonObjectMapper
 import no.nav.klage.repository.BehandlingRepository
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG
-import org.apache.kafka.clients.consumer.ConsumerConfig.*
+import org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
+import org.apache.kafka.clients.consumer.ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG
+import org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG
+import org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG
+import org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.config.SslConfigs
 import org.apache.kafka.common.errors.WakeupException
 import org.apache.kafka.common.serialization.StringDeserializer
 import java.time.Duration
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.min
 
 object KafkaClient {
-
     private val logger = KtorSimpleLogger(KafkaClient::class.java.name)
     private val isRunning = AtomicBoolean(true)
+
     @Volatile private var consumer: KafkaConsumer<String, String>? = null
 
     private const val INITIAL_BACKOFF_MS = 1_000L
@@ -31,15 +35,25 @@ object KafkaClient {
 
     // --- Diagnostics state (written only inside the poll loop / restart wrapper, read from HTTP threads) ---
     private val groupId: String = "kaptein-api-consumer_" + UUID.randomUUID().toString()
+
     @Volatile private var consumerAlive: Boolean = false
+
     @Volatile private var lastPollEpochMs: Long = 0
+
     @Volatile private var lastRecordEpochMs: Long = 0
+
     @Volatile private var processedCount: Long = 0
+
     @Volatile private var skippedCount: Long = 0
+
     @Volatile private var restartCount: Long = 0
+
     @Volatile private var lastRestartEpochMs: Long = 0
+
     @Volatile private var lastError: String? = null
+
     @Volatile private var lastErrorEpochMs: Long = 0
+
     @Volatile private var partitionPositions: Map<String, Long> = emptyMap()
 
     data class KafkaDiagnostics(
@@ -138,7 +152,10 @@ object KafkaClient {
                 lastRestartEpochMs = System.currentTimeMillis()
                 lastError = "consumer loop failed: ${e.message}"
                 lastErrorEpochMs = lastRestartEpochMs
-                logger.error("Kafka consumer loop failed (restart #$restartCount). Will recreate the consumer and resume from committed offsets after ${backoffMs}ms.", e)
+                logger.error(
+                    "Kafka consumer loop failed (restart #$restartCount). Will recreate the consumer and resume from committed offsets after ${backoffMs}ms.",
+                    e,
+                )
             }
 
             if (!isRunning.get()) return
@@ -149,11 +166,12 @@ object KafkaClient {
                 return
             }
             // Reset backoff if the previous run was healthy for a while, otherwise grow it.
-            backoffMs = if (System.currentTimeMillis() - loopStart > 60_000) {
-                INITIAL_BACKOFF_MS
-            } else {
-                min(backoffMs * 2, MAX_BACKOFF_MS)
-            }
+            backoffMs =
+                if (System.currentTimeMillis() - loopStart > 60_000) {
+                    INITIAL_BACKOFF_MS
+                } else {
+                    min(backoffMs * 2, MAX_BACKOFF_MS)
+                }
         }
     }
 
@@ -172,8 +190,8 @@ object KafkaClient {
                         BehandlingRepository.addBehandling(
                             ourJacksonObjectMapper().readValue(
                                 record.value(),
-                                Behandling::class.java
-                            )
+                                Behandling::class.java,
+                            ),
                         )
                         processedCount++
                         lastRecordEpochMs = System.currentTimeMillis()
@@ -184,13 +202,17 @@ object KafkaClient {
                         skippedCount++
                         lastError = "skipped poison message offset=${record.offset()} key=${record.key()}: ${e.message}"
                         lastErrorEpochMs = System.currentTimeMillis()
-                        logger.error("Skipping unprocessable message (key=${record.key()}, offset=${record.offset()}). This update will not be applied on this instance, which may cause drift between instances.", e)
+                        logger.error(
+                            "Skipping unprocessable message (key=${record.key()}, offset=${record.offset()}). This update will not be applied on this instance, which may cause drift between instances.",
+                            e,
+                        )
                     }
                 }
                 // record current positions per partition for drift diagnostics
-                partitionPositions = consumer!!.assignment().associate { tp ->
-                    "${tp.topic()}-${tp.partition()}" to consumer!!.position(tp)
-                }
+                partitionPositions =
+                    consumer!!.assignment().associate { tp ->
+                        "${tp.topic()}-${tp.partition()}" to consumer!!.position(tp)
+                    }
                 consumer!!.commitSync()
             }
         } catch (e: WakeupException) {
@@ -206,24 +228,26 @@ object KafkaClient {
         }
     }
 
-    private fun consumerConfig() = mapOf(
-        BOOTSTRAP_SERVERS_CONFIG to System.getenv("KAFKA_BROKERS"),
-        AUTO_OFFSET_RESET_CONFIG to "latest",
-        ENABLE_AUTO_COMMIT_CONFIG to false,
-        KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
-        VALUE_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
-        GROUP_ID_CONFIG to groupId,
-    ) + securityConfig()
+    private fun consumerConfig() =
+        mapOf(
+            BOOTSTRAP_SERVERS_CONFIG to System.getenv("KAFKA_BROKERS"),
+            AUTO_OFFSET_RESET_CONFIG to "latest",
+            ENABLE_AUTO_COMMIT_CONFIG to false,
+            KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
+            VALUE_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
+            GROUP_ID_CONFIG to groupId,
+        ) + securityConfig()
 
-    private fun securityConfig() = mapOf(
-        CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to "SSL",
-        SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG to "", // Disable server host name verification
-        SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG to "JKS",
-        SslConfigs.SSL_KEYSTORE_TYPE_CONFIG to "PKCS12",
-        SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG to System.getenv("KAFKA_TRUSTSTORE_PATH"),
-        SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG to System.getenv("KAFKA_CREDSTORE_PASSWORD"),
-        SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG to System.getenv("KAFKA_KEYSTORE_PATH"),
-        SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG to System.getenv("KAFKA_CREDSTORE_PASSWORD"),
-        SslConfigs.SSL_KEY_PASSWORD_CONFIG to System.getenv("KAFKA_CREDSTORE_PASSWORD"),
-    )
+    private fun securityConfig() =
+        mapOf(
+            CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to "SSL",
+            SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG to "", // Disable server host name verification
+            SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG to "JKS",
+            SslConfigs.SSL_KEYSTORE_TYPE_CONFIG to "PKCS12",
+            SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG to System.getenv("KAFKA_TRUSTSTORE_PATH"),
+            SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG to System.getenv("KAFKA_CREDSTORE_PASSWORD"),
+            SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG to System.getenv("KAFKA_KEYSTORE_PATH"),
+            SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG to System.getenv("KAFKA_CREDSTORE_PASSWORD"),
+            SslConfigs.SSL_KEY_PASSWORD_CONFIG to System.getenv("KAFKA_CREDSTORE_PASSWORD"),
+        )
 }

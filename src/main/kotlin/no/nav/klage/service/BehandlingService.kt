@@ -1,10 +1,25 @@
 package no.nav.klage.service
 
-import io.ktor.util.logging.*
-import no.nav.klage.domain.*
+import io.ktor.util.logging.KtorSimpleLogger
+import no.nav.klage.domain.Behandling
 import no.nav.klage.domain.Behandling.InitiatingSystem.KABAL
+import no.nav.klage.domain.BehandlingActiveView
+import no.nav.klage.domain.BehandlingFinishedView
+import no.nav.klage.domain.BehandlingerActiveResponseView
+import no.nav.klage.domain.BehandlingerFinishedResponseView
+import no.nav.klage.domain.TRBehandlingActiveView
+import no.nav.klage.domain.TRBehandlingFinishedView
+import no.nav.klage.domain.TRBehandlingerActiveResponseView
+import no.nav.klage.domain.TRBehandlingerFinishedResponseView
+import no.nav.klage.domain.VedtakView
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.Type.*
+import no.nav.klage.kodeverk.Type.ANKE
+import no.nav.klage.kodeverk.Type.ANKE_I_TRYGDERETTEN
+import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK
+import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN
+import no.nav.klage.kodeverk.Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET
+import no.nav.klage.kodeverk.Type.KLAGE
+import no.nav.klage.kodeverk.Type.OMGJOERINGSKRAV
 import no.nav.klage.repository.BehandlingRepository
 import java.time.temporal.ChronoUnit
 
@@ -15,12 +30,14 @@ fun getBehandlingListLedige(type: Type): BehandlingerActiveResponseView {
     val start = System.currentTimeMillis()
     val behandlingList = BehandlingRepository.getBehandlingListCopyForReadOnly()
 
-    val behandlingViewList = behandlingList.filter { behandling ->
-        behandling.feilregistrering == null &&
-                !behandling.isAvsluttetAvSaksbehandler &&
-                !behandling.isTildelt &&
-                behandling.typeId == type.id
-    }.map { it.toActiveView() }
+    val behandlingViewList =
+        behandlingList
+            .filter { behandling ->
+                behandling.feilregistrering == null &&
+                    !behandling.isAvsluttetAvSaksbehandler &&
+                    !behandling.isTildelt &&
+                    behandling.typeId == type.id
+            }.map { it.toActiveView() }
 
     logger.debug("Fetched ${behandlingViewList.size} ledige behandlinger with type $type in ${System.currentTimeMillis() - start} ms")
 
@@ -35,12 +52,14 @@ fun getTRBehandlingListLedige(type: Type): TRBehandlingerActiveResponseView {
     val start = System.currentTimeMillis()
     val behandlingList = BehandlingRepository.getBehandlingListCopyForReadOnly()
 
-    val behandlingViewList = behandlingList.filter { behandling ->
-        behandling.feilregistrering == null &&
-                !behandling.isAvsluttetAvSaksbehandler &&
-                !behandling.isTildelt &&
-                behandling.typeId == type.id
-    }.map { it.toTRActiveView() }
+    val behandlingViewList =
+        behandlingList
+            .filter { behandling ->
+                behandling.feilregistrering == null &&
+                    !behandling.isAvsluttetAvSaksbehandler &&
+                    !behandling.isTildelt &&
+                    behandling.typeId == type.id
+            }.map { it.toTRActiveView() }
 
     logger.debug("Fetched ${behandlingViewList.size} ledige behandlinger with type ${type.id} in ${System.currentTimeMillis() - start} ms")
 
@@ -55,12 +74,14 @@ fun getBehandlingListTildelte(type: Type): BehandlingerActiveResponseView {
     val start = System.currentTimeMillis()
     val behandlingList = BehandlingRepository.getBehandlingListCopyForReadOnly()
 
-    val behandlingViewList = behandlingList.filter { behandling ->
-        behandling.feilregistrering == null &&
-                !behandling.isAvsluttetAvSaksbehandler &&
-                behandling.isTildelt &&
-                behandling.typeId == type.id
-    }.map { it.toActiveView() }
+    val behandlingViewList =
+        behandlingList
+            .filter { behandling ->
+                behandling.feilregistrering == null &&
+                    !behandling.isAvsluttetAvSaksbehandler &&
+                    behandling.isTildelt &&
+                    behandling.typeId == type.id
+            }.map { it.toActiveView() }
 
     logger.debug("Fetched ${behandlingViewList.size} tildelte behandlinger with type $type in ${System.currentTimeMillis() - start} ms")
 
@@ -75,14 +96,18 @@ fun getTRBehandlingListTildelte(type: Type): TRBehandlingerActiveResponseView {
     val start = System.currentTimeMillis()
     val behandlingList = BehandlingRepository.getBehandlingListCopyForReadOnly()
 
-    val behandlingViewList = behandlingList.filter { behandling ->
-        behandling.feilregistrering == null &&
-                !behandling.isAvsluttetAvSaksbehandler &&
-                behandling.isTildelt &&
-                behandling.typeId == type.id
-    }.map { it.toTRActiveView() }
+    val behandlingViewList =
+        behandlingList
+            .filter { behandling ->
+                behandling.feilregistrering == null &&
+                    !behandling.isAvsluttetAvSaksbehandler &&
+                    behandling.isTildelt &&
+                    behandling.typeId == type.id
+            }.map { it.toTRActiveView() }
 
-    logger.debug("Fetched ${behandlingViewList.size} tildelte behandlinger with type ${type.id} in ${System.currentTimeMillis() - start} ms")
+    logger.debug(
+        "Fetched ${behandlingViewList.size} tildelte behandlinger with type ${type.id} in ${System.currentTimeMillis() - start} ms",
+    )
 
     return TRBehandlingerActiveResponseView(
         behandlinger = behandlingViewList,
@@ -95,31 +120,34 @@ fun getBehandlingListFerdigstilte(type: Type): BehandlingerFinishedResponseView 
     val start = System.currentTimeMillis()
     val behandlingList = BehandlingRepository.getBehandlingListCopyForReadOnly()
 
-    val behandlingViewList = behandlingList.filter { behandling ->
-        behandling.feilregistrering == null &&
-                behandling.isAvsluttetAvSaksbehandler &&
-                behandling.typeId == type.id
-    }.map {
-        BehandlingFinishedView(
-            id = it.id.toString(),
-            ytelseId = it.ytelseId,
-            typeId = it.typeId,
-            avsluttetAvSaksbehandlerDate = it.avsluttetAvSaksbehandlerDate!!,
-            tildeltEnhet = it.tildeltEnhet!!,
-            frist = it.frist,
-            ageKA = it.ageKA,
-            innsendingshjemmelIdList = it.hjemmelIdList,
-            created = it.created,
-            mottattKlageinstans = it.mottattKlageinstans,
-            resultat = VedtakView(
-                utfallId = it.resultat?.utfallId!!,
-                registreringshjemmelIdList = it.resultat.hjemmelIdSet.toList(),
-            ),
-            varsletFrist = it.varsletFrist,
-            tilbakekreving = it.tilbakekreving,
-            behandlingstid = it.getBehandlingstid(),
-        )
-    }
+    val behandlingViewList =
+        behandlingList
+            .filter { behandling ->
+                behandling.feilregistrering == null &&
+                    behandling.isAvsluttetAvSaksbehandler &&
+                    behandling.typeId == type.id
+            }.map {
+                BehandlingFinishedView(
+                    id = it.id.toString(),
+                    ytelseId = it.ytelseId,
+                    typeId = it.typeId,
+                    avsluttetAvSaksbehandlerDate = it.avsluttetAvSaksbehandlerDate!!,
+                    tildeltEnhet = it.tildeltEnhet!!,
+                    frist = it.frist,
+                    ageKA = it.ageKA,
+                    innsendingshjemmelIdList = it.hjemmelIdList,
+                    created = it.created,
+                    mottattKlageinstans = it.mottattKlageinstans,
+                    resultat =
+                        VedtakView(
+                            utfallId = it.resultat?.utfallId!!,
+                            registreringshjemmelIdList = it.resultat.hjemmelIdSet.toList(),
+                        ),
+                    varsletFrist = it.varsletFrist,
+                    tilbakekreving = it.tilbakekreving,
+                    behandlingstid = it.getBehandlingstid(),
+                )
+            }
     logger.debug("Fetched ${behandlingViewList.size} finished behandlinger with type $type in ${System.currentTimeMillis() - start} ms")
     return BehandlingerFinishedResponseView(
         behandlinger = behandlingViewList,
@@ -134,10 +162,12 @@ private fun Behandling.getBehandlingstid(): Int {
         KLAGE, OMGJOERINGSKRAV, BEGJAERING_OM_GJENOPPTAK, BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET -> {
             ChronoUnit.DAYS.between(this.mottattKlageinstans, this.avsluttetAvSaksbehandlerDate).toInt()
         }
+
         ANKE_I_TRYGDERETTEN, BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN -> {
             val endDate = this.kjennelseMottatt?.toLocalDate() ?: this.avsluttetAvSaksbehandlerDate
             ChronoUnit.DAYS.between(this.sendtTilTrygderetten!!.toLocalDate(), endDate).toInt()
         }
+
         ANKE -> {
             val startDate = if (this.initiatingSystem == KABAL) this.created.toLocalDate() else this.mottattKlageinstans
             ChronoUnit.DAYS.between(startDate, this.avsluttetAvSaksbehandlerDate).toInt()
@@ -150,43 +180,50 @@ fun getTRBehandlingListFerdigstilte(type: Type): TRBehandlingerFinishedResponseV
     val start = System.currentTimeMillis()
     val behandlingList = BehandlingRepository.getBehandlingListCopyForReadOnly()
 
-    val behandlingViewList = behandlingList.filter { behandling ->
-        behandling.feilregistrering == null &&
-                behandling.isAvsluttetAvSaksbehandler &&
-                behandling.typeId == type.id
-    }.map {
-        TRBehandlingFinishedView(
-            id = it.id.toString(),
-            ytelseId = it.ytelseId,
-            typeId = it.typeId,
-            avsluttetAvSaksbehandlerDate = it.avsluttetAvSaksbehandlerDate!!,
-            tildeltEnhet = it.previousTildeltEnhet ?: it.tildeltEnhet!!,
-            ageKA = it.ageKA,
-            innsendingshjemmelIdList = it.hjemmelIdList,
-            created = it.created,
-            mottattKlageinstans = it.mottattKlageinstans,
-            resultat = if (it.resultat?.utfallId != null && it.kjennelseMottatt != null) {
-                VedtakView(
-                    utfallId = it.resultat.utfallId,
-                    registreringshjemmelIdList = it.resultat.hjemmelIdSet.toList(),
+    val behandlingViewList =
+        behandlingList
+            .filter { behandling ->
+                behandling.feilregistrering == null &&
+                    behandling.isAvsluttetAvSaksbehandler &&
+                    behandling.typeId == type.id
+            }.map {
+                TRBehandlingFinishedView(
+                    id = it.id.toString(),
+                    ytelseId = it.ytelseId,
+                    typeId = it.typeId,
+                    avsluttetAvSaksbehandlerDate = it.avsluttetAvSaksbehandlerDate!!,
+                    tildeltEnhet = it.previousTildeltEnhet ?: it.tildeltEnhet!!,
+                    ageKA = it.ageKA,
+                    innsendingshjemmelIdList = it.hjemmelIdList,
+                    created = it.created,
+                    mottattKlageinstans = it.mottattKlageinstans,
+                    resultat =
+                        if (it.resultat?.utfallId != null && it.kjennelseMottatt != null) {
+                            VedtakView(
+                                utfallId = it.resultat.utfallId,
+                                registreringshjemmelIdList = it.resultat.hjemmelIdSet.toList(),
+                            )
+                        } else {
+                            null
+                        },
+                    tilbakekreving = it.tilbakekreving,
+                    previousRegistreringshjemmelIdList = it.previousRegistreringshjemmelIdList,
+                    sendtTilTR = it.sendtTilTrygderetten!!.toLocalDate(),
+                    mottattFraTR = it.kjennelseMottatt?.toLocalDate(),
+                    behandlingstid = it.getBehandlingstid(),
                 )
-            } else null,
-            tilbakekreving = it.tilbakekreving,
-            previousRegistreringshjemmelIdList = it.previousRegistreringshjemmelIdList,
-            sendtTilTR = it.sendtTilTrygderetten!!.toLocalDate(),
-            mottattFraTR = it.kjennelseMottatt?.toLocalDate(),
-            behandlingstid = it.getBehandlingstid(),
-        )
-    }
-    logger.debug("Fetched ${behandlingViewList.size} finished behandlinger with type ${type.id} in ${System.currentTimeMillis() - start} ms")
+            }
+    logger.debug(
+        "Fetched ${behandlingViewList.size} finished behandlinger with type ${type.id} in ${System.currentTimeMillis() - start} ms",
+    )
     return TRBehandlingerFinishedResponseView(
         behandlinger = behandlingViewList,
         total = behandlingViewList.size,
     )
 }
 
-fun Behandling.toActiveView(): BehandlingActiveView {
-    return BehandlingActiveView(
+fun Behandling.toActiveView(): BehandlingActiveView =
+    BehandlingActiveView(
         id = this.id.toString(),
         ytelseId = this.ytelseId,
         typeId = this.typeId,
@@ -199,12 +236,11 @@ fun Behandling.toActiveView(): BehandlingActiveView {
         mottattKlageinstans = this.mottattKlageinstans,
         sattPaaVentReasonId = this.sattPaaVent?.reasonId,
         varsletFrist = this.varsletFrist,
-        tilbakekreving = this.hjemmelIdList.isTilbakekreving()
+        tilbakekreving = this.hjemmelIdList.isTilbakekreving(),
     )
-}
 
-fun Behandling.toTRActiveView(): TRBehandlingActiveView {
-    return TRBehandlingActiveView(
+fun Behandling.toTRActiveView(): TRBehandlingActiveView =
+    TRBehandlingActiveView(
         id = this.id.toString(),
         ytelseId = this.ytelseId,
         typeId = this.typeId,
@@ -219,24 +255,24 @@ fun Behandling.toTRActiveView(): TRBehandlingActiveView {
         previousRegistreringshjemmelIdList = this.previousRegistreringshjemmelIdList,
         sendtTilTR = this.sendtTilTrygderetten!!.toLocalDate(),
     )
-}
 
 private fun List<String>.isTilbakekreving(): Boolean {
-    val tilbakekrevinghjemler = setOf(
-        "FTRL_22_15_TILBAKEKREVING",
-        "FTRL_22_15_TILBAKEKREVING_DOEDSBO",
-        "1000.022.015",
-        "FTRL_22_15_1_1",
-        "FTRL_22_15_1_2",
-        "FTRL_22_15_2",
-        "FTRL_22_15_4",
-        "FTRL_22_15_5",
-        "FTRL_22_15_6",
-        "FTRL_22_17A",
-        "FTRL_4_28",
-        "596",
-        "614",
-        "706",
-    )
+    val tilbakekrevinghjemler =
+        setOf(
+            "FTRL_22_15_TILBAKEKREVING",
+            "FTRL_22_15_TILBAKEKREVING_DOEDSBO",
+            "1000.022.015",
+            "FTRL_22_15_1_1",
+            "FTRL_22_15_1_2",
+            "FTRL_22_15_2",
+            "FTRL_22_15_4",
+            "FTRL_22_15_5",
+            "FTRL_22_15_6",
+            "FTRL_22_17A",
+            "FTRL_4_28",
+            "596",
+            "614",
+            "706",
+        )
     return this.any { it in tilbakekrevinghjemler }
 }

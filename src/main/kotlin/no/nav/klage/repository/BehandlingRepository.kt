@@ -1,14 +1,13 @@
 package no.nav.klage.repository
 
-import io.ktor.util.logging.*
+import io.ktor.util.logging.KtorSimpleLogger
 import no.nav.klage.domain.Behandling
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
 object BehandlingRepository {
-
     private val logger = KtorSimpleLogger(BehandlingRepository::class.java.name)
 
     private val lock = ReentrantReadWriteLock()
@@ -30,8 +29,8 @@ object BehandlingRepository {
      * Two instances that hold identical data (same ids at the same 'modified' versions)
      * will produce the same count and checksum. Compare across pods to detect drift.
      */
-    fun getStateFingerprint(): StateFingerprint {
-        return lock.read {
+    fun getStateFingerprint(): StateFingerprint =
+        lock.read {
             // order-independent: XOR per-entry hashes so insertion order does not matter
             var checksum = 0L
             var newestModified: java.time.LocalDateTime? = null
@@ -47,7 +46,6 @@ object BehandlingRepository {
                 newestModified = newestModified?.toString(),
             )
         }
-    }
 
     data class StateFingerprint(
         val count: Int,
