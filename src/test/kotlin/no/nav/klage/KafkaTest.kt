@@ -14,7 +14,6 @@ import java.time.Duration
 @Disabled("just for local development testing")
 @Testcontainers
 class KafkaTest {
-
     companion object {
         @JvmStatic
         @Container
@@ -23,12 +22,13 @@ class KafkaTest {
 
     @Test
     fun `test kafka connection`() {
-        val producerProps = mapOf<String, String>(
-            "bootstrap.servers" to kafka.bootstrapServers,
-            "key.serializer" to "org.apache.kafka.common.serialization.StringSerializer",
-            "value.serializer" to "org.apache.kafka.common.serialization.StringSerializer",
-            "security.protocol" to "PLAINTEXT"
-        )
+        val producerProps =
+            mapOf<String, String>(
+                "bootstrap.servers" to kafka.bootstrapServers,
+                "key.serializer" to "org.apache.kafka.common.serialization.StringSerializer",
+                "value.serializer" to "org.apache.kafka.common.serialization.StringSerializer",
+                "security.protocol" to "PLAINTEXT",
+            )
 
         println(System.getenv())
 
@@ -43,7 +43,7 @@ class KafkaTest {
                 "key.deserializer" to "org.apache.kafka.common.serialization.StringDeserializer",
                 "value.deserializer" to "org.apache.kafka.common.serialization.StringDeserializer",
                 "group.id" to "someGroup",
-                "security.protocol" to "PLAINTEXT"
+                "security.protocol" to "PLAINTEXT",
             )
 
         val consumer = KafkaConsumer<String, String>(consumerProps)
@@ -54,5 +54,4 @@ class KafkaTest {
             println("Received message: ${record.value()} with key: ${record.key()}")
         }
     }
-
 }

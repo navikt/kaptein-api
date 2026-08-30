@@ -3,7 +3,7 @@ package no.nav.klage.domain
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Behandling(
@@ -35,10 +35,11 @@ data class Behandling(
     val previousTildeltEnhet: String?,
     val previousRegistreringshjemmelIdList: List<String>?,
     val initiatingSystem: InitiatingSystem,
-
-    ) {
+) {
     enum class InitiatingSystem {
-        FAGSYSTEM, KABIN, KABAL
+        FAGSYSTEM,
+        KABIN,
+        KABAL,
     }
 
     data class VedtakView(
@@ -69,8 +70,5 @@ data class Behandling(
         return true
     }
 
-    override fun hashCode(): Int {
-        return id.hashCode()
-    }
-
+    override fun hashCode(): Int = id.hashCode()
 }

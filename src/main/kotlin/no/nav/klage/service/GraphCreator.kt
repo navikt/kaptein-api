@@ -1,6 +1,6 @@
 package no.nav.klage.service
 
-import io.ktor.util.logging.*
+import io.ktor.util.logging.KtorSimpleLogger
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -9,34 +9,37 @@ import no.nav.klage.domain.Behandling
 import no.nav.klage.repository.BehandlingRepository
 
 object GraphCreator {
-
     private val logger = KtorSimpleLogger(GraphCreator::class.java.name)
 
-    //TODO return something
+    // TODO return something
     suspend fun calculateGraphs() {
         coroutineScope {
             logger.debug("Starting graph calculations")
 
             var filteredBehandlingSet = setOf<Behandling>()
 
-            val mainFilterJob = launch {
-                logger.debug("Starting main filter job")
-                delay(1000)
-                filteredBehandlingSet = BehandlingRepository.getBehandlingListCopyForReadOnly().take(1).toSet()
-                logger.debug("Main filter job done")
-            }
+            val mainFilterJob =
+                launch {
+                    logger.debug("Starting main filter job")
+                    delay(1000)
+                    filteredBehandlingSet = BehandlingRepository.getBehandlingListCopyForReadOnly().take(1).toSet()
+                    logger.debug("Main filter job done")
+                }
 
             mainFilterJob.join() // wait for the main filter to complete before starting graphs
 
-            val graph1 = async {
-                graph1(filteredBehandlingSet)
-            }
-            val graph2 = async {
-                graph2(filteredBehandlingSet)
-            }
-            val graph3 = async {
-                graph3(filteredBehandlingSet)
-            }
+            val graph1 =
+                async {
+                    graph1(filteredBehandlingSet)
+                }
+            val graph2 =
+                async {
+                    graph2(filteredBehandlingSet)
+                }
+            val graph3 =
+                async {
+                    graph3(filteredBehandlingSet)
+                }
 
             val resultGraph1 = graph1.await()
             val resultGraph2 = graph2.await()
@@ -63,5 +66,4 @@ object GraphCreator {
         delay(2000)
         logger.debug("Graph 3 done")
     }
-
 }

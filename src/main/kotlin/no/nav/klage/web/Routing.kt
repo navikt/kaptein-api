@@ -3,17 +3,31 @@ package no.nav.klage.web
 import io.github.smiley4.ktoropenapi.get
 import io.github.smiley4.ktoropenapi.openApi
 import io.github.smiley4.ktorswaggerui.swaggerUI
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.Application
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
 import no.nav.klage.domain.BehandlingerActiveResponseView
 import no.nav.klage.domain.BehandlingerFinishedResponseView
 import no.nav.klage.domain.TRBehandlingerActiveResponseView
 import no.nav.klage.domain.TRBehandlingerFinishedResponseView
-import no.nav.klage.kodeverk.Type.*
+import no.nav.klage.kodeverk.Type.ANKE
+import no.nav.klage.kodeverk.Type.ANKE_I_TRYGDERETTEN
+import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK
+import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN
+import no.nav.klage.kodeverk.Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET
+import no.nav.klage.kodeverk.Type.KLAGE
+import no.nav.klage.kodeverk.Type.OMGJOERINGSKRAV
 import no.nav.klage.repository.BehandlingRepository
-import no.nav.klage.service.*
+import no.nav.klage.service.KafkaClient
+import no.nav.klage.service.getBehandlingListFerdigstilte
+import no.nav.klage.service.getBehandlingListLedige
+import no.nav.klage.service.getBehandlingListTildelte
+import no.nav.klage.service.getTRBehandlingListFerdigstilte
+import no.nav.klage.service.getTRBehandlingListLedige
+import no.nav.klage.service.getTRBehandlingListTildelte
 import no.nav.klage.util.validateToken
 
 fun Application.configureRouting() {
@@ -26,7 +40,7 @@ fun Application.configureRouting() {
             swaggerUI("/api.json")
         }
 
-        get("/klager/ledige", {
+        get(path = "/klager/ledige", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerActiveResponseView>()
@@ -37,7 +51,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListLedige(KLAGE))
         }
 
-        get("/anker/ledige", {
+        get(path = "/anker/ledige", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerActiveResponseView>()
@@ -48,7 +62,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListLedige(ANKE))
         }
 
-        get("/behandlinger-etter-tr-opphevet/ledige", {
+        get(path = "/behandlinger-etter-tr-opphevet/ledige", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerActiveResponseView>()
@@ -59,7 +73,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListLedige(BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET))
         }
 
-        get("/omgjoeringskrav/ledige", {
+        get(path = "/omgjoeringskrav/ledige", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerActiveResponseView>()
@@ -70,7 +84,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListLedige(OMGJOERINGSKRAV))
         }
 
-        get("/anker-i-tr/ledige", {
+        get(path = "/anker-i-tr/ledige", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<TRBehandlingerActiveResponseView>()
@@ -81,7 +95,7 @@ fun Application.configureRouting() {
             call.respond(getTRBehandlingListLedige(type = ANKE_I_TRYGDERETTEN))
         }
 
-        get("/begjaeringer-om-gjenopptak/ledige", {
+        get(path = "/begjaeringer-om-gjenopptak/ledige", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerActiveResponseView>()
@@ -92,7 +106,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListLedige(type = BEGJAERING_OM_GJENOPPTAK))
         }
 
-        get("/begjaeringer-om-gjenopptak-i-tr/ledige", {
+        get(path = "/begjaeringer-om-gjenopptak-i-tr/ledige", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<TRBehandlingerActiveResponseView>()
@@ -103,7 +117,7 @@ fun Application.configureRouting() {
             call.respond(getTRBehandlingListLedige(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN))
         }
 
-        get("/klager/tildelte", {
+        get(path = "/klager/tildelte", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerActiveResponseView>()
@@ -114,7 +128,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListTildelte(KLAGE))
         }
 
-        get("/anker/tildelte", {
+        get(path = "/anker/tildelte", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerActiveResponseView>()
@@ -125,7 +139,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListTildelte(ANKE))
         }
 
-        get("/behandlinger-etter-tr-opphevet/tildelte", {
+        get(path = "/behandlinger-etter-tr-opphevet/tildelte", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerActiveResponseView>()
@@ -136,7 +150,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListTildelte(BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET))
         }
 
-        get("/omgjoeringskrav/tildelte", {
+        get(path = "/omgjoeringskrav/tildelte", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerActiveResponseView>()
@@ -147,7 +161,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListTildelte(OMGJOERINGSKRAV))
         }
 
-        get("/anker-i-tr/tildelte", {
+        get(path = "/anker-i-tr/tildelte", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<TRBehandlingerActiveResponseView>()
@@ -158,7 +172,7 @@ fun Application.configureRouting() {
             call.respond(getTRBehandlingListTildelte(type = ANKE_I_TRYGDERETTEN))
         }
 
-        get("/begjaeringer-om-gjenopptak/tildelte", {
+        get(path = "/begjaeringer-om-gjenopptak/tildelte", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerActiveResponseView>()
@@ -169,7 +183,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListTildelte(type = BEGJAERING_OM_GJENOPPTAK))
         }
 
-        get("/begjaeringer-om-gjenopptak-i-tr/tildelte", {
+        get(path = "/begjaeringer-om-gjenopptak-i-tr/tildelte", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<TRBehandlingerActiveResponseView>()
@@ -180,7 +194,7 @@ fun Application.configureRouting() {
             call.respond(getTRBehandlingListTildelte(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN))
         }
 
-        get("/klager/ferdigstilte", {
+        get(path = "/klager/ferdigstilte", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerFinishedResponseView>()
@@ -191,7 +205,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListFerdigstilte(KLAGE))
         }
 
-        get("/anker/ferdigstilte", {
+        get(path = "/anker/ferdigstilte", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerFinishedResponseView>()
@@ -202,7 +216,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListFerdigstilte(ANKE))
         }
 
-        get("/behandlinger-etter-tr-opphevet/ferdigstilte", {
+        get(path = "/behandlinger-etter-tr-opphevet/ferdigstilte", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerFinishedResponseView>()
@@ -213,7 +227,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListFerdigstilte(BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET))
         }
 
-        get("/omgjoeringskrav/ferdigstilte", {
+        get(path = "/omgjoeringskrav/ferdigstilte", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerFinishedResponseView>()
@@ -224,7 +238,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListFerdigstilte(OMGJOERINGSKRAV))
         }
 
-        get("/anker-i-tr/ferdigstilte", {
+        get(path = "/anker-i-tr/ferdigstilte", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<TRBehandlingerFinishedResponseView>()
@@ -235,7 +249,7 @@ fun Application.configureRouting() {
             call.respond(getTRBehandlingListFerdigstilte(type = ANKE_I_TRYGDERETTEN))
         }
 
-        get("/begjaeringer-om-gjenopptak/ferdigstilte", {
+        get(path = "/begjaeringer-om-gjenopptak/ferdigstilte", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<BehandlingerFinishedResponseView>()
@@ -246,7 +260,7 @@ fun Application.configureRouting() {
             call.respond(getBehandlingListFerdigstilte(type = BEGJAERING_OM_GJENOPPTAK))
         }
 
-        get("/begjaeringer-om-gjenopptak-i-tr/ferdigstilte", {
+        get(path = "/begjaeringer-om-gjenopptak-i-tr/ferdigstilte", builder = {
             response {
                 HttpStatusCode.OK to {
                     body<TRBehandlingerFinishedResponseView>()
@@ -264,7 +278,7 @@ fun Application.configureRouting() {
             if (KafkaClient.isConsumerHealthy()) {
                 call.respondText("OK")
             } else {
-                call.respond(HttpStatusCode.ServiceUnavailable, "Kafka consumer unhealthy")
+                call.respond(status = HttpStatusCode.ServiceUnavailable, message = "Kafka consumer unhealthy")
             }
         }
 
@@ -286,7 +300,7 @@ fun Application.configureRouting() {
                     "ready" to BehandlingRepository.isReady(),
                     "fingerprint" to BehandlingRepository.getStateFingerprint(),
                     "kafka" to KafkaClient.getDiagnostics(),
-                )
+                ),
             )
         }
     }

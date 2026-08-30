@@ -1,10 +1,17 @@
 package no.nav.klage.web
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.server.application.*
-import io.ktor.server.routing.*
-import io.ktor.server.websocket.*
-import io.ktor.websocket.*
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.routing.routing
+import io.ktor.server.websocket.WebSockets
+import io.ktor.server.websocket.pingPeriod
+import io.ktor.server.websocket.timeout
+import io.ktor.server.websocket.webSocket
+import io.ktor.websocket.CloseReason
+import io.ktor.websocket.Frame
+import io.ktor.websocket.close
+import io.ktor.websocket.readText
 import no.nav.klage.oppgave.util.ourJacksonObjectMapper
 import java.time.LocalDate
 import kotlin.time.Duration.Companion.seconds
@@ -24,15 +31,17 @@ fun Application.configureSockets() {
 
                     val request = ourJacksonObjectMapper().readValue<GraphRequest>(text)
 
-                    outgoing.send(Frame.Text(
-                        ourJacksonObjectMapper().writeValueAsString(
-                            listOf(
-                                GraphResponse("graph 1", (0..10).random()),
+                    outgoing.send(
+                        Frame.Text(
+                            ourJacksonObjectMapper().writeValueAsString(
+                                listOf(
+                                    GraphResponse(name = "graph 1", value = (0..10).random()),
+                                ),
                             ),
                         ),
-                    ))
-                    if (text.equals("bye", ignoreCase = true)) {
-                        close(CloseReason(CloseReason.Codes.NORMAL, "Client said BYE"))
+                    )
+                    if (text.equals(other = "bye", ignoreCase = true)) {
+                        close(CloseReason(code = CloseReason.Codes.NORMAL, message = "Client said BYE"))
                     }
                 }
             }

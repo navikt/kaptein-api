@@ -3,11 +3,15 @@ package no.nav.klage
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.github.smiley4.ktoropenapi.OpenApi
 import io.github.smiley4.ktoropenapi.config.SchemaGenerator
-import io.ktor.serialization.jackson.*
-import io.ktor.server.application.*
-import io.ktor.server.netty.*
-import io.ktor.server.plugins.compression.*
-import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationStopping
+import io.ktor.server.application.install
+import io.ktor.server.application.log
+import io.ktor.server.netty.EngineMain
+import io.ktor.server.plugins.compression.Compression
+import io.ktor.server.plugins.compression.gzip
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import no.nav.klage.domain.Behandling
@@ -20,7 +24,7 @@ import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
@@ -47,10 +51,11 @@ fun Application.module() {
     log.debug("installing OpenApi")
     install(OpenApi) {
         schemas {
-            generator = SchemaGenerator.reflection {
-                overwrite(SchemaGenerator.TypeOverwrites.LocalDateTime())
-                overwrite(SchemaGenerator.TypeOverwrites.LocalDate())
-            }
+            generator =
+                SchemaGenerator.reflection {
+                    overwrite(SchemaGenerator.TypeOverwrites.LocalDateTime())
+                    overwrite(SchemaGenerator.TypeOverwrites.LocalDate())
+                }
         }
     }
 
@@ -58,7 +63,7 @@ fun Application.module() {
     configureRouting()
 
     if (isProductionMode) {
-        //first start kafka listener to be ready to consume messages as soon as possible
+        // first start kafka listener to be ready to consume messages as soon as possible
         launch {
             KafkaClient.startKafkaListener()
         }
@@ -69,7 +74,7 @@ fun Application.module() {
             KafkaClient.stopKafkaListener()
         }
 
-        //then fetch existing behandlinger from kabal api
+        // then fetch existing behandlinger from kabal api
         try {
             launch {
                 withTimeout(Duration.ofMinutes(15).toMillis()) {
@@ -114,11 +119,12 @@ private fun addMockBehandlinger() {
                 hjemmelIdList = listOf("1", "2"),
                 modified = LocalDateTime.now(),
                 created = LocalDateTime.now(),
-                resultat = Behandling.VedtakView(
-                    id = UUID.randomUUID(),
-                    utfallId = listOf("1", "2", "3").random(),
-                    hjemmelIdSet = setOf("FTRL_22_12", "FTRL_22_13"),
-                ),
+                resultat =
+                    Behandling.VedtakView(
+                        id = UUID.randomUUID(),
+                        utfallId = listOf("1", "2", "3").random(),
+                        hjemmelIdSet = setOf("FTRL_22_12", "FTRL_22_13"),
+                    ),
                 sattPaaVent = null,
                 sendtTilTrygderetten = null,
                 kjennelseMottatt = null,
@@ -129,7 +135,7 @@ private fun addMockBehandlinger() {
                 previousTildeltEnhet = null,
                 previousRegistreringshjemmelIdList = null,
                 initiatingSystem = Behandling.InitiatingSystem.KABIN,
-            )
+            ),
         )
     }
 }
