@@ -13,8 +13,7 @@ import no.nav.klage.domain.BehandlingerActiveResponseView
 import no.nav.klage.domain.BehandlingerFinishedResponseView
 import no.nav.klage.domain.TRBehandlingerActiveResponseView
 import no.nav.klage.domain.TRBehandlingerFinishedResponseView
-import no.nav.klage.kodeverk.Type.ANKE
-import no.nav.klage.kodeverk.Type.ANKE_I_TRYGDERETTEN
+import no.nav.klage.kodeverk.Type
 import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK
 import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN
 import no.nav.klage.kodeverk.Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET
@@ -31,6 +30,7 @@ import no.nav.klage.service.getTRBehandlingListTildelte
 import no.nav.klage.util.validateToken
 
 fun Application.configureRouting() {
+    // TODO: Routes for new anke types
     routing {
         route("/api.json") {
             openApi()
@@ -59,7 +59,7 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getBehandlingListLedige(ANKE))
+            call.respond(getBehandlingListLedige(Type.ANKE_FOER_2027))
         }
 
         get(path = "/behandlinger-etter-tr-opphevet/ledige", builder = {
@@ -92,7 +92,7 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getTRBehandlingListLedige(type = ANKE_I_TRYGDERETTEN))
+            call.respond(getTRBehandlingListLedige(type = Type.ANKE_I_TRYGDERETTEN_FOER_2027))
         }
 
         get(path = "/begjaeringer-om-gjenopptak/ledige", builder = {
@@ -136,7 +136,7 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getBehandlingListTildelte(ANKE))
+            call.respond(getBehandlingListTildelte(Type.ANKE_FOER_2027))
         }
 
         get(path = "/behandlinger-etter-tr-opphevet/tildelte", builder = {
@@ -169,7 +169,7 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getTRBehandlingListTildelte(type = ANKE_I_TRYGDERETTEN))
+            call.respond(getTRBehandlingListTildelte(type = Type.ANKE_I_TRYGDERETTEN_FOER_2027))
         }
 
         get(path = "/begjaeringer-om-gjenopptak/tildelte", builder = {
@@ -213,7 +213,7 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getBehandlingListFerdigstilte(ANKE))
+            call.respond(getBehandlingListFerdigstilte(Type.ANKE_FOER_2027))
         }
 
         get(path = "/behandlinger-etter-tr-opphevet/ferdigstilte", builder = {
@@ -246,7 +246,7 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getTRBehandlingListFerdigstilte(type = ANKE_I_TRYGDERETTEN))
+            call.respond(getTRBehandlingListFerdigstilte(type = Type.ANKE_I_TRYGDERETTEN_FOER_2027))
         }
 
         get(path = "/begjaeringer-om-gjenopptak/ferdigstilte", builder = {

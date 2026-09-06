@@ -13,8 +13,6 @@ import no.nav.klage.domain.TRBehandlingerActiveResponseView
 import no.nav.klage.domain.TRBehandlingerFinishedResponseView
 import no.nav.klage.domain.VedtakView
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.Type.ANKE
-import no.nav.klage.kodeverk.Type.ANKE_I_TRYGDERETTEN
 import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK
 import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN
 import no.nav.klage.kodeverk.Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET
@@ -163,14 +161,19 @@ private fun Behandling.getBehandlingstid(): Int {
             ChronoUnit.DAYS.between(this.mottattKlageinstans, this.avsluttetAvSaksbehandlerDate).toInt()
         }
 
-        ANKE_I_TRYGDERETTEN, BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN -> {
+        Type.ANKE_I_TRYGDERETTEN_FOER_2027, BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN -> {
             val endDate = this.kjennelseMottatt?.toLocalDate() ?: this.avsluttetAvSaksbehandlerDate
             ChronoUnit.DAYS.between(this.sendtTilTrygderetten!!.toLocalDate(), endDate).toInt()
         }
 
-        ANKE -> {
+        Type.ANKE_FOER_2027 -> {
             val startDate = if (this.initiatingSystem == KABAL) this.created.toLocalDate() else this.mottattKlageinstans
             ChronoUnit.DAYS.between(startDate, this.avsluttetAvSaksbehandlerDate).toInt()
+        }
+
+        // TODO: Implementer støtte for "Etter 2027"-typene
+        else -> {
+            error("Behandling type is not implemented.")
         }
     }
 }
