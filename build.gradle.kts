@@ -16,6 +16,9 @@ application {
 }
 
 dependencies {
+    // Overstyrer netty fra Ktor til 4.2.17.Final pga. CVE-2026-75595 i netty-handler.
+    // Kan fjernes når ktor-server-netty drar inn 4.2.17.Final eller nyere.
+    implementation(platform(libs.netty.bom))
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
