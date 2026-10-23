@@ -13,8 +13,8 @@ import no.nav.klage.domain.TRBehandlingerActiveResponseView
 import no.nav.klage.domain.TRBehandlingerFinishedResponseView
 import no.nav.klage.domain.VedtakView
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK
-import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN
+import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK_FOER_2027
+import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027
 import no.nav.klage.kodeverk.Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET
 import no.nav.klage.kodeverk.Type.KLAGE
 import no.nav.klage.kodeverk.Type.OMGJOERINGSKRAV
@@ -157,11 +157,11 @@ private fun Behandling.getBehandlingstid(): Int {
     if (this.avsluttetAvSaksbehandlerDate == null) error("Behandling is not finished")
     val type = Type.of(this.typeId)
     return when (type) {
-        KLAGE, OMGJOERINGSKRAV, BEGJAERING_OM_GJENOPPTAK, BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET -> {
+        KLAGE, OMGJOERINGSKRAV, BEGJAERING_OM_GJENOPPTAK_FOER_2027, BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET -> {
             ChronoUnit.DAYS.between(this.mottattKlageinstans, this.avsluttetAvSaksbehandlerDate).toInt()
         }
 
-        Type.ANKE_I_TRYGDERETTEN_FOER_2027, BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN -> {
+        Type.ANKE_I_TRYGDERETTEN_FOER_2027, BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027 -> {
             val endDate = this.kjennelseMottatt?.toLocalDate() ?: this.avsluttetAvSaksbehandlerDate
             ChronoUnit.DAYS.between(this.sendtTilTrygderetten!!.toLocalDate(), endDate).toInt()
         }
