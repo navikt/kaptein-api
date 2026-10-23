@@ -14,8 +14,8 @@ import no.nav.klage.domain.BehandlingerFinishedResponseView
 import no.nav.klage.domain.TRBehandlingerActiveResponseView
 import no.nav.klage.domain.TRBehandlingerFinishedResponseView
 import no.nav.klage.kodeverk.Type
-import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK
-import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN
+import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK_FOER_2027
+import no.nav.klage.kodeverk.Type.BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027
 import no.nav.klage.kodeverk.Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET
 import no.nav.klage.kodeverk.Type.KLAGE
 import no.nav.klage.kodeverk.Type.OMGJOERINGSKRAV
@@ -103,7 +103,7 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getBehandlingListLedige(type = BEGJAERING_OM_GJENOPPTAK))
+            call.respond(getBehandlingListLedige(type = BEGJAERING_OM_GJENOPPTAK_FOER_2027))
         }
 
         get(path = "/begjaeringer-om-gjenopptak-i-tr/ledige", builder = {
@@ -114,7 +114,7 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getTRBehandlingListLedige(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN))
+            call.respond(getTRBehandlingListLedige(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027))
         }
 
         get(path = "/klager/tildelte", builder = {
@@ -180,7 +180,7 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getBehandlingListTildelte(type = BEGJAERING_OM_GJENOPPTAK))
+            call.respond(getBehandlingListTildelte(type = BEGJAERING_OM_GJENOPPTAK_FOER_2027))
         }
 
         get(path = "/begjaeringer-om-gjenopptak-i-tr/tildelte", builder = {
@@ -191,7 +191,7 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getTRBehandlingListTildelte(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN))
+            call.respond(getTRBehandlingListTildelte(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027))
         }
 
         get(path = "/klager/ferdigstilte", builder = {
@@ -257,7 +257,7 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getBehandlingListFerdigstilte(type = BEGJAERING_OM_GJENOPPTAK))
+            call.respond(getBehandlingListFerdigstilte(type = BEGJAERING_OM_GJENOPPTAK_FOER_2027))
         }
 
         get(path = "/begjaeringer-om-gjenopptak-i-tr/ferdigstilte", builder = {
@@ -268,7 +268,7 @@ fun Application.configureRouting() {
             }
         }) {
             call.validateToken()
-            call.respond(getTRBehandlingListFerdigstilte(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN))
+            call.respond(getTRBehandlingListFerdigstilte(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027))
         }
 
         get("/internal/health") {
