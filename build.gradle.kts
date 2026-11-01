@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.ktor.server.openapi)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.compression)
+    implementation(libs.ktor.server.auth)
     implementation(libs.smiley4.openapi.generator)
     implementation(libs.smiley4.swagger.ui)
     implementation(libs.smiley4.schema.kenerator.core)
@@ -49,8 +50,10 @@ dependencies {
     testImplementation(libs.testcontainers.kafka)
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.ktor.server.test.host)
+    testImplementation(libs.ktor.client.mock)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.assertj.core)
     testRuntimeOnly(libs.junit.platform.launcher)
 }
 
