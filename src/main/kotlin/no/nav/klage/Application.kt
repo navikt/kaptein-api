@@ -16,6 +16,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import no.nav.klage.domain.Behandling
 import no.nav.klage.repository.BehandlingRepository
+import no.nav.klage.security.IntrospectionResult
+import no.nav.klage.security.TexasTokenIntrospector
+import no.nav.klage.security.TokenIntrospector
+import no.nav.klage.security.configureAuthentication
+import no.nav.klage.security.parsePreAuthorizedClientIds
 import no.nav.klage.service.KabalApiService
 import no.nav.klage.service.KafkaClient
 import no.nav.klage.service.MockKafkaClient
@@ -59,6 +64,9 @@ fun Application.module() {
         }
     }
 
+    log.debug("configuring authentication")
+    configureAuthentication()
+
     log.debug("configuring routing")
     configureRouting()
 
@@ -95,6 +103,22 @@ fun Application.module() {
     log.debug("Application is running in ${if (isDevelopmentMode) "development/local" else "production"} mode")
 
 //    configureSockets()
+}
+
+private fun Application.configureAuthentication() {
+    val introspectionEndpoint = System.getenv("NAIS_TOKEN_INTROSPECTION_ENDPOINT")
+    val preAuthorizedApps = System.getenv("AZURE_APP_PRE_AUTHORIZED_APPS")
+    if (isProductionMode) {
+        requireNotNull(introspectionEndpoint) { "NAIS_TOKEN_INTROSPECTION_ENDPOINT is not set" }
+        requireNotNull(preAuthorizedApps) { "AZURE_APP_PRE_AUTHORIZED_APPS is not set" }
+    }
+    // Without Texas (local development) every token is rejected.
+    configureAuthentication(
+        tokenIntrospector =
+            introspectionEndpoint?.let { TexasTokenIntrospector(introspectionEndpoint = it) }
+                ?: TokenIntrospector { IntrospectionResult(active = false, error = "No token introspection endpoint") },
+        preAuthorizedClientIds = preAuthorizedApps?.let { parsePreAuthorizedClientIds(json = it) }.orEmpty(),
+    )
 }
 
 private fun addMockBehandlinger() {

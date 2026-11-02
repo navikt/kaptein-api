@@ -5,6 +5,7 @@ import io.github.smiley4.ktoropenapi.openApi
 import io.github.smiley4.ktorswaggerui.swaggerUI
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
+import io.ktor.server.auth.authenticate
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.route
@@ -20,6 +21,7 @@ import no.nav.klage.kodeverk.Type.BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET
 import no.nav.klage.kodeverk.Type.KLAGE
 import no.nav.klage.kodeverk.Type.OMGJOERINGSKRAV
 import no.nav.klage.repository.BehandlingRepository
+import no.nav.klage.security.AZURE_AUTH
 import no.nav.klage.service.KafkaClient
 import no.nav.klage.service.getBehandlingListFerdigstilte
 import no.nav.klage.service.getBehandlingListLedige
@@ -27,7 +29,6 @@ import no.nav.klage.service.getBehandlingListTildelte
 import no.nav.klage.service.getTRBehandlingListFerdigstilte
 import no.nav.klage.service.getTRBehandlingListLedige
 import no.nav.klage.service.getTRBehandlingListTildelte
-import no.nav.klage.util.validateToken
 
 fun Application.configureRouting() {
     // TODO: Routes for new anke types
@@ -40,235 +41,216 @@ fun Application.configureRouting() {
             swaggerUI("/api.json")
         }
 
-        get(path = "/klager/ledige", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerActiveResponseView>()
+        authenticate(AZURE_AUTH) {
+            get(path = "/klager/ledige", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerActiveResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListLedige(KLAGE))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListLedige(KLAGE))
-        }
 
-        get(path = "/anker/ledige", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerActiveResponseView>()
+            get(path = "/anker/ledige", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerActiveResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListLedige(Type.ANKE_FOER_2027))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListLedige(Type.ANKE_FOER_2027))
-        }
 
-        get(path = "/behandlinger-etter-tr-opphevet/ledige", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerActiveResponseView>()
+            get(path = "/behandlinger-etter-tr-opphevet/ledige", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerActiveResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListLedige(BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListLedige(BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET))
-        }
 
-        get(path = "/omgjoeringskrav/ledige", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerActiveResponseView>()
+            get(path = "/omgjoeringskrav/ledige", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerActiveResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListLedige(OMGJOERINGSKRAV))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListLedige(OMGJOERINGSKRAV))
-        }
 
-        get(path = "/anker-i-tr/ledige", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<TRBehandlingerActiveResponseView>()
+            get(path = "/anker-i-tr/ledige", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<TRBehandlingerActiveResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getTRBehandlingListLedige(type = Type.ANKE_I_TRYGDERETTEN_FOER_2027))
             }
-        }) {
-            call.validateToken()
-            call.respond(getTRBehandlingListLedige(type = Type.ANKE_I_TRYGDERETTEN_FOER_2027))
-        }
 
-        get(path = "/begjaeringer-om-gjenopptak/ledige", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerActiveResponseView>()
+            get(path = "/begjaeringer-om-gjenopptak/ledige", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerActiveResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListLedige(type = BEGJAERING_OM_GJENOPPTAK_FOER_2027))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListLedige(type = BEGJAERING_OM_GJENOPPTAK_FOER_2027))
-        }
 
-        get(path = "/begjaeringer-om-gjenopptak-i-tr/ledige", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<TRBehandlingerActiveResponseView>()
+            get(path = "/begjaeringer-om-gjenopptak-i-tr/ledige", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<TRBehandlingerActiveResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getTRBehandlingListLedige(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027))
             }
-        }) {
-            call.validateToken()
-            call.respond(getTRBehandlingListLedige(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027))
-        }
 
-        get(path = "/klager/tildelte", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerActiveResponseView>()
+            get(path = "/klager/tildelte", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerActiveResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListTildelte(KLAGE))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListTildelte(KLAGE))
-        }
 
-        get(path = "/anker/tildelte", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerActiveResponseView>()
+            get(path = "/anker/tildelte", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerActiveResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListTildelte(Type.ANKE_FOER_2027))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListTildelte(Type.ANKE_FOER_2027))
-        }
 
-        get(path = "/behandlinger-etter-tr-opphevet/tildelte", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerActiveResponseView>()
+            get(path = "/behandlinger-etter-tr-opphevet/tildelte", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerActiveResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListTildelte(BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListTildelte(BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET))
-        }
 
-        get(path = "/omgjoeringskrav/tildelte", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerActiveResponseView>()
+            get(path = "/omgjoeringskrav/tildelte", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerActiveResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListTildelte(OMGJOERINGSKRAV))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListTildelte(OMGJOERINGSKRAV))
-        }
 
-        get(path = "/anker-i-tr/tildelte", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<TRBehandlingerActiveResponseView>()
+            get(path = "/anker-i-tr/tildelte", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<TRBehandlingerActiveResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getTRBehandlingListTildelte(type = Type.ANKE_I_TRYGDERETTEN_FOER_2027))
             }
-        }) {
-            call.validateToken()
-            call.respond(getTRBehandlingListTildelte(type = Type.ANKE_I_TRYGDERETTEN_FOER_2027))
-        }
 
-        get(path = "/begjaeringer-om-gjenopptak/tildelte", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerActiveResponseView>()
+            get(path = "/begjaeringer-om-gjenopptak/tildelte", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerActiveResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListTildelte(type = BEGJAERING_OM_GJENOPPTAK_FOER_2027))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListTildelte(type = BEGJAERING_OM_GJENOPPTAK_FOER_2027))
-        }
 
-        get(path = "/begjaeringer-om-gjenopptak-i-tr/tildelte", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<TRBehandlingerActiveResponseView>()
+            get(path = "/begjaeringer-om-gjenopptak-i-tr/tildelte", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<TRBehandlingerActiveResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getTRBehandlingListTildelte(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027))
             }
-        }) {
-            call.validateToken()
-            call.respond(getTRBehandlingListTildelte(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027))
-        }
 
-        get(path = "/klager/ferdigstilte", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerFinishedResponseView>()
+            get(path = "/klager/ferdigstilte", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerFinishedResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListFerdigstilte(KLAGE))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListFerdigstilte(KLAGE))
-        }
 
-        get(path = "/anker/ferdigstilte", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerFinishedResponseView>()
+            get(path = "/anker/ferdigstilte", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerFinishedResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListFerdigstilte(Type.ANKE_FOER_2027))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListFerdigstilte(Type.ANKE_FOER_2027))
-        }
 
-        get(path = "/behandlinger-etter-tr-opphevet/ferdigstilte", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerFinishedResponseView>()
+            get(path = "/behandlinger-etter-tr-opphevet/ferdigstilte", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerFinishedResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListFerdigstilte(BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListFerdigstilte(BEHANDLING_ETTER_TRYGDERETTEN_OPPHEVET))
-        }
 
-        get(path = "/omgjoeringskrav/ferdigstilte", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerFinishedResponseView>()
+            get(path = "/omgjoeringskrav/ferdigstilte", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerFinishedResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListFerdigstilte(OMGJOERINGSKRAV))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListFerdigstilte(OMGJOERINGSKRAV))
-        }
 
-        get(path = "/anker-i-tr/ferdigstilte", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<TRBehandlingerFinishedResponseView>()
+            get(path = "/anker-i-tr/ferdigstilte", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<TRBehandlingerFinishedResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getTRBehandlingListFerdigstilte(type = Type.ANKE_I_TRYGDERETTEN_FOER_2027))
             }
-        }) {
-            call.validateToken()
-            call.respond(getTRBehandlingListFerdigstilte(type = Type.ANKE_I_TRYGDERETTEN_FOER_2027))
-        }
 
-        get(path = "/begjaeringer-om-gjenopptak/ferdigstilte", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<BehandlingerFinishedResponseView>()
+            get(path = "/begjaeringer-om-gjenopptak/ferdigstilte", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<BehandlingerFinishedResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getBehandlingListFerdigstilte(type = BEGJAERING_OM_GJENOPPTAK_FOER_2027))
             }
-        }) {
-            call.validateToken()
-            call.respond(getBehandlingListFerdigstilte(type = BEGJAERING_OM_GJENOPPTAK_FOER_2027))
-        }
 
-        get(path = "/begjaeringer-om-gjenopptak-i-tr/ferdigstilte", builder = {
-            response {
-                HttpStatusCode.OK to {
-                    body<TRBehandlingerFinishedResponseView>()
+            get(path = "/begjaeringer-om-gjenopptak-i-tr/ferdigstilte", builder = {
+                response {
+                    HttpStatusCode.OK to {
+                        body<TRBehandlingerFinishedResponseView>()
+                    }
                 }
+            }) {
+                call.respond(getTRBehandlingListFerdigstilte(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027))
             }
-        }) {
-            call.validateToken()
-            call.respond(getTRBehandlingListFerdigstilte(type = BEGJAERING_OM_GJENOPPTAK_I_TRYGDERETTEN_FOER_2027))
         }
 
         get("/internal/health") {
