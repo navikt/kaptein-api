@@ -11,6 +11,10 @@ plugins {
 group = "no.nav.klage"
 version = "0.0.1"
 
+kotlin {
+    jvmToolchain(25)
+}
+
 application {
     mainClass = "io.ktor.server.netty.EngineMain"
 }
@@ -91,7 +95,7 @@ tasks.named("detekt") {
 }
 
 tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
-    jvmTarget.set(JvmTarget.JVM_21.target)
+    jvmTarget.set(JvmTarget.JVM_25.target)
     reports {
         html.required.set(true)
         checkstyle.required.set(true)
