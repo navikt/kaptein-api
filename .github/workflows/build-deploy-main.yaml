@@ -18,4 +18,5 @@ jobs:
     with:
       java-version: '25'
       e2e-tests: 'none'
+      prod-deploy-timeout: '20m'
     secrets: inherit
