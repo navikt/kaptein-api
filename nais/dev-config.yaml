@@ -24,7 +24,7 @@ adRoles:
   - name: KABAL_INNSYN_EGEN_ENHET_ROLE_ID
     value: 016fb83f-4e7c-47ec-ae8a-e3efa72a43e7
   - name: EGEN_ANSATT_ROLE_ID
-    value: dbe4ad45-320b-4e9a-aaa1-73cca4ee124d
+    value: 8df187e3-f6ab-4a5d-8830-61bf148e59fe
   - name: KABAL_ADMIN_ROLE_ID
     value: 14d756b4-d014-419a-a5bc-b8f9e31ce248
   - name: KABAL_ROL_ROLE_ID
