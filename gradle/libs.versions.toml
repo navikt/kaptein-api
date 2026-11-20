@@ -1,7 +1,7 @@
 [versions]
 kotlin = "2.4.21"
 ktor = "3.6.1"
-logback = "1.6.6"
+logback = "1.6.7"
 kafka = "4.4.0"
 jackson = "2.23.0"
 logstash = "9.0"
@@ -14,7 +14,7 @@ assertj = "3.27.7"
 ktlint = "1.8.0"
 ktlintPlugin = "14.2.0"
 detekt = "2.0.0-alpha.6"
-netty = "4.2.20.Final"
+netty = "4.2.21.Final"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
